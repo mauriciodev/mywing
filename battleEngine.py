@@ -4,28 +4,42 @@ import os
 from pilot import pilot
 from position import position
 from move import move
+from ship import ship
 
 class BattleEngine:
     def __init__(self):
-        #these lists represent the pilots in game and their positions
-        self.pilots=[]
-        self.positions=[]
-        #this list represents every available pilot 
-        self.pilotLibrary=[]
+        #first read the moves
+        self.movesLibrary={} #this list represents every available move
+        self.readMoves()
+        #then ships, that aggregates moves
+        self.shipsLibrary={} #this list represents every available ship
+        self.readShips()
+        #then pilots that aggregates ships
+        self.pilotLibrary={} #this list represents every available pilot 
         self.readPilots()
+        
+        #these lists represent the pilots in game and their positions
+        self.pilots=[] #list of complete pilots, ready to battle
+        
         random.seed()
         self.attackResults=['attack','attack','attack','critical','focus','focus','nothing','nothing']
         self.defenseResults=['evade','evade','evade','focus','focus','nothing','nothing','nothing']
         random.shuffle(self.attackResults)
-        
         self.turnStages=['Planning','Movement','Attack']
         self.currentStage=0
         self.currentTurn=0
         self.playerSequence=[]
-        self.movesLibrary={}
-        self.readMoves()
-        print self.movesLibrary
         
+        
+    def getPilotShip(self,pilotId):
+        return self.shipsLibrary[self.pilotLibrary[pilotId].shipId]
+    
+    def getPilotMoves(self,pilotId):
+        moveIds=self.getPilotShip(pilotId).moveIds
+        moves=[]
+        for moveId in moveIds:
+            moves.append(self.movesLibrary[moveId])
+        return moves
         
     def rollAttackDices(self,n):
         rollResult={'attack':0,'critical':0,'focus':0,'nothing':0}
@@ -33,12 +47,6 @@ class BattleEngine:
             result=random.randint(0,7)
             rollResult[self.attackResults[result]]+=1
         return rollResult
-    def performMove(self,pilotId, move):
-        print "From: ",self.positions[pilotId].toDict()
-        newPos=move.performMove(self.positions[pilotId])
-        self.positions[pilotId]=newPos
-        print "To:",newPos.toDict()
-        return newPos
          
     def rollDefenseDices(self,n):
         rollResult={'evade':0,'focus':0,'nothing':0}
@@ -47,7 +55,20 @@ class BattleEngine:
             result=random.randint(0,7)
             rollResult[self.defenseResults[result]]+=1
         return rollResult
-        
+    
+    def performMove(self,pilotBattleId, moveId):
+        startPos=self.getPilotPos(pilotBattleId)
+        print "From: ",startPos.toDict()
+        newPos=self.movesLibrary[moveId].performMove(startPos)
+        self.setPilotPos(pilotBattleId, newPos)
+        print "To:",newPos.toDict()
+        return newPos
+    
+    def getPilotPos(self,pilotBattleId):
+        return self.pilots[pilotBattleId].position
+    
+    def setPilotPos(self,pilotBattleId,newPos):
+        self.pilots[pilotBattleId].position=newPos
     
     def getRange(self,pilotId1,pilotId2):
         return self.positions[pilotId1].getRange(self.positions[pilotId2])
@@ -77,7 +98,7 @@ class BattleEngine:
         print self.pilots[pilotId2].name, "now has",self.pilots[pilotId2].shield,"shield and",self.pilots[pilotId2].health, "health" 
             
     def getPilotByName(self,name):
-        for pilot in self.pilotLibrary:
+        for pilot in self.pilotLibrary.values():
             if pilot.name==name:
                 return pilot
     def getMoveById(self,moveId):
@@ -91,27 +112,46 @@ class BattleEngine:
         pilot=self.getPilotByName(name)
         pilotPos=position(x,y)
         pilotPos.rotate(trigAngle)
-        self.addPilot(pilot, pilotPos)
-        return (pilot,pilotPos)
+        pShip=self.getPilotShip(pilot.id)
+        pMoves=self.getPilotMoves(pilot.id)
+        battleId=len(self.pilots)
+        pilot.setComplete(pShip, pMoves, battleId, pilotPos)
+        self.addPilot(pilot)
+        return pilot
     
     def getActivePilotIdByName(self,name):
         for i,p in enumerate(self.pilots):
             if p.name==name:
                 return i
     
-    def addPilot(self,pilot, pos):
-        self.positions.append(pos)
+    def addPilot(self,pilot):
         self.pilots.append(pilot)
+    
     def readPilots(self):
-        self.pilotLibrary=[]
+        self.pilotLibrary={}
         dirname, filename = os.path.split(os.path.abspath(__file__))
-        with open(os.path.join(dirname,'data/pilots.json')) as pilotFile:
-            for pilotLine in pilotFile:
+        with open(os.path.join(dirname,'data/pilots.json')) as f:
+            for line in f:
                 p=pilot()
-                p.fromDict(json.loads(pilotLine))
-                self.pilotLibrary.append(p)
+                p.fromDict(json.loads(line))
+                self.pilotLibrary[p.id]=p
                 #print p.asDict()
-
+    def readMoves(self):
+        self.movesLibrary={}
+        dirname, filename = os.path.split(os.path.abspath(__file__))
+        with open(os.path.join(dirname,'data/moves.json')) as f:
+            for line in f:
+                m=move()
+                m.fromDict(json.loads(line))
+                self.movesLibrary[m.id]=m
+    def readShips(self):
+        self.shipsLibrary={}
+        dirname, filename = os.path.split(os.path.abspath(__file__))
+        with open(os.path.join(dirname,'data/ships.json')) as f:
+            for line in f:
+                s=ship()
+                s.fromDict(json.loads(line))
+                self.shipsLibrary[s.id]=s
     def savePilots(self):
         dirname, filename = os.path.split(os.path.abspath(__file__))
         pilotFile=open(os.path.join(dirname,'data/pilots.json'),'w')
@@ -123,26 +163,19 @@ class BattleEngine:
         self.currentStage+=1
         #restarting the turn sequence
         if self.currentStage>len(self.turnStages): 
-            self.currentStage=self.currentStage % len(turnStages)
+            self.currentStage=self.currentStage % len(self.turnStages)
     
     def getCurrentTurnStageName(self):
         return self.turnStages[self.currentTurn]
     
-    def readMoves(self):
-        self.movesLibrary={}
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        with open(os.path.join(dirname,'data/moves.json')) as f:
-            for line in f:
-                m=move()
-                m.fromDict(json.loads(line))
-                self.movesLibrary[m.id]=m
 
     
 if __name__=="__main__":
     test=BattleEngine()
-    test.readPilots()
+    #test.readPilots()
     test.addPilotByNameAndCoords("Luke Skywalker", 0, 0, 0)
     test.addPilotByNameAndCoords("Mauler Mithel", 0, 0, 0)
+    print test.pilots[0].isComplete()
     test.basicAttack(0, 1)
     #print test.pilots[1].health,test.pilots[1].shield 
     

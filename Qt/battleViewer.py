@@ -38,8 +38,8 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         self.borders=self.scene.addRect(0,0,x,y)
         self.borders.moveBy(-1.*x/2.,-1.*y/2.)
     def addShip(self, x, y, trigAngle, name="novo", shipName="NewShip"):
-        (pilot,pos)=self.battleEngine.addPilotByNameAndCoords(name,x,y,trigAngle)
-        self.scene.addItem(shipItem(pos,pilot,parent=self))
+        pilot=self.battleEngine.addPilotByNameAndCoords(name,x,y,trigAngle)
+        self.scene.addItem(shipItem(pilot.battleId,parent=self))
         
     def fileSave(self):
         print("save")
