@@ -110,6 +110,8 @@ class BattleEngine:
         
     def addPilotByNameAndCoords(self,name, x, y, trigAngle):
         pilot=self.getPilotByName(name)
+        if pilot==None:
+            return pilot
         pilotPos=position(x,y)
         pilotPos.rotate(trigAngle)
         pShip=self.getPilotShip(pilot.id)
@@ -173,9 +175,9 @@ class BattleEngine:
 if __name__=="__main__":
     test=BattleEngine()
     #test.readPilots()
-    test.addPilotByNameAndCoords("Luke Skywalker", 0, 0, 0)
-    test.addPilotByNameAndCoords("Mauler Mithel", 0, 0, 0)
-    print test.pilots[0].isComplete()
+    test.addPilotByNameAndCoords("Mauricio", 0, 0, 0)
+    test.addPilotByNameAndCoords("Leonardo", 0, 0, 0)
+    #print test.pilots[0].isComplete()
     test.basicAttack(0, 1)
     #print test.pilots[1].health,test.pilots[1].shield 
     

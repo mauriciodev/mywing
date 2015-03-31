@@ -1,0 +1,4 @@
+{"id": 0, "shield": 2, "skillLevel": 8, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-40, 40], "shipId": 0, "name": "Mauricio", "cost": 28}
+{"id": 1, "shield": 2, "skillLevel": 8, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-40, 40], "shipId": 0, "name": "Luiz Claudio", "cost": 25}
+{"id": 5, "shield": 0, "skillLevel": 5, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-40, 40], "shipId": 1, "name": "Philipe", "cost": 15}
+{"id": 6, "shield": 0, "skillLevel": 7, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-40, 40], "shipId": 1, "name": "Leonardo", "cost": 17}

@@ -58,9 +58,10 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
             print "Folder does not exist"
     def addBasicSet(self):
         self.addBorders(self.toPixels(120), self.toPixels(120))
-        self.addShip(self.toPixels(-50),self.toPixels(0), -1*math.pi/2, "Luke Skywalker")
-        self.addShip(self.toPixels(50), self.toPixels(-10), math.pi/2, "Obsidian squadron pilot")
-        self.addShip(self.toPixels(50), self.toPixels(10), math.pi/2, "Night Beast")
+        self.addShip(self.toPixels(-50),self.toPixels(-10), -1*math.pi/2, "Leonardo")
+        self.addShip(self.toPixels(-50),self.toPixels(10), -1*math.pi/2, "Mauricio")
+        self.addShip(self.toPixels(50), self.toPixels(-10), math.pi/2, "Philipe")
+        self.addShip(self.toPixels(50), self.toPixels(10), math.pi/2, "Luiz Claudio")
     
     def toPixels(self,cm):
         return self.pixelsPerCentimeter*cm

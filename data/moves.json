@@ -1,0 +1,19 @@
+{"id": 0, "name": "Straight forward 1", "dx": 1.0, "dy": 0.0, "rotation": 0.0}
+{"id": 1, "name": "Straight forward 2", "dx": 2.0, "dy": 0.0, "rotation": 0.0}
+{"id": 2, "name": "Straight forward 3", "dx": 3.0, "dy": 0.0, "rotation": 0.0}
+{"id": 3, "name": "Straight forward 4", "dx": 4.0, "dy": 0.0, "rotation": 0.0}
+{"id": 4, "name": "Straight forward 5", "dx": 5.0, "dy": 0.0, "rotation": 0.0}
+{"id": 5, "name": "Curve right 1", "dx": 1.0, "dy": -0.5, "rotation": -45.0}
+{"id": 6, "name": "Curve right 2", "dx": 2.0, "dy": -1.0, "rotation": -45.0}
+{"id": 7, "name": "Curve right 3", "dx": 3.0, "dy": -1.5, "rotation": -45.0}
+{"id": 8, "name": "Curve left 1", "dx": 1.0, "dy": 0.5, "rotation": 45.0}
+{"id": 9, "name": "Curve left 2", "dx": 2.0, "dy": 1.0, "rotation": 45.0}
+{"id": 10, "name": "Curve left 3", "dx": 3.0, "dy": 1.5, "rotation": 45.0}
+{"id": 11, "name": "Strong curve right 1", "dx": 1.0, "dy": -1.0, "rotation": -90.0}
+{"id": 12, "name": "Strong curve right 2", "dx": 2.0, "dy": -2.0, "rotation": -90.0}
+{"id": 13, "name": "Strong curve right 3", "dx": 3.0, "dy": -3.0, "rotation": -90.0}
+{"id": 14, "name": "Strong curve left 1", "dx": 1.0, "dy": 1.0, "rotation": 90.0}
+{"id": 15, "name": "Strong curve left 2", "dx": 2.0, "dy": 2.0, "rotation": 90.0}
+{"id": 16, "name": "Strong curve left 3", "dx": 3.0, "dy": 3.0, "rotation": 90.0}
+{"id": 17, "name": "U turn 3", "dx": 3.0, "dy": 0.0, "rotation": 180.0}
+{"id": 18, "name": "U turn 4", "dx": 4.0, "dy": 0.0, "rotation": 180.0}
