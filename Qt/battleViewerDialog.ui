@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QWing - Space ship battles</string>
+   <string>MyWing - Space ship battles</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>934</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -60,6 +60,12 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>104</width>
+     <height>112</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>Pilots</string>
    </property>
@@ -67,9 +73,38 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QListWidget" name="listWidget">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_2">
+   <property name="windowTitle">
+    <string>Battle log</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QListWidget" name="listWidget"/>
+      <widget class="QTextEdit" name="logTextEdit">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>

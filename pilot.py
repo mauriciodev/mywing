@@ -62,22 +62,25 @@ class pilot:
         self.cost=dict['cost']
         self.setIncomplete()
 
-    def setComplete(self,ship, moves,battleId,pos):
+    def setComplete(self,ship, moves,battleId,pos,playerId):
         self.moves=moves
         self.ship=ship
         self.battleId=battleId
         self.position=pos
+        self.playerId=playerId
     def setIncomplete(self):
         self.ship=None
         self.moves=[]
         self.battleId=-1
         self.position=None
+        self.playerId=-1
     def isComplete(self):
         t1=(len(self.moves)>0)
         t2=(self.ship!=None)
         t3=(self.battleId!=-1)
         t4=(self.position!=None)
-        return (t1 and t2 and t3 and t4) 
+        t5=(self.position!=-1)
+        return (t1 and t2 and t3 and t4 and t5) 
     
     def getMoveByName(self,name):
         if self.isComplete():

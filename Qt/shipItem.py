@@ -29,7 +29,7 @@ class shipItem(QtGui.QGraphicsPixmapItem):
         self.makePopupMenu() #creates a menu for that pilot
         
     def setPosFromBattleEngine(self,position):
-        self.setPos(QPointF(position.x,-1*position.y))
+        self.setPos(QPointF(position.x-self.boundingRect().width()/2,-1*position.y+self.boundingRect().height()/2))
         rotation=math.degrees(position.getRotation())
         print rotation
         self.setRotation(rotation)
@@ -48,6 +48,7 @@ class shipItem(QtGui.QGraphicsPixmapItem):
         return self.parent.battleEngine.pilots[self.pilotBattleId]
     
     def contextMenuEvent(self,event): #QGraphicsSceneContextMenuEvent *
+        self.makeMainWeaponMenu()
         action = self.menu.exec_(event.screenPos())
         if action in self.moveActions: 
             #qDebug("User clicked move")
@@ -55,12 +56,16 @@ class shipItem(QtGui.QGraphicsPixmapItem):
             newPos=self.parent.battleEngine.performMove(self.getPilot().battleId,move.id)
             self.setPosFromBattleEngine(newPos)
             #self.parent.moveShip(,self)
-        if action == self.mainWeaponAction: 
+        if action in self.mainWeaponAttackActions:
+            targetPilotId=self.parent.battleEngine.getActivePilotIdByName(action.text())
+            self.parent.battleEngine.basicAttack(self.pilotBattleId,targetPilotId)
             qDebug("User clicked attack")
         if action == self.focusAction: 
             qDebug("User clicked Perform action")
     def makePopupMenu(self):
         self.menu=QtGui.QMenu(self.parent)
+        self.menu.addAction("Player "+str(self.getPilot().playerId))
+        self.menu.addSeparator()
         #move=menu.addAction("Move");
         moveMenu=QtGui.QMenu(self.menu)
         moveMenu.setTitle("&Move")
@@ -82,14 +87,24 @@ class shipItem(QtGui.QGraphicsPixmapItem):
                 moveAction.setFont(font)
             moveMenu.addAction(moveAction)
             self.moveActions.append(moveAction)
+        
         attackMenu=QtGui.QMenu(self.menu)
         attackMenu.setTitle("&Attack")
         self.menu.addMenu(attackMenu)
-        self.mainWeaponAction=attackMenu.addAction("Main weapon");
+        self.mainWeaponMenu=QtGui.QMenu(attackMenu)
+        self.mainWeaponMenu.setTitle("&Main weapon")
+        attackMenu.addMenu(self.mainWeaponMenu)
+        #self.actionsActions=[]
         actionMenu=QtGui.QMenu(self.menu)
         actionMenu.setTitle("&Perform action")
         self.menu.addMenu(actionMenu)
         self.focusAction=actionMenu.addAction("Focus");
         #performAction=menu.addAction("Perform Action");
         #attack=menu.addAction("Attack");
-        
+    def makeMainWeaponMenu(self):
+        self.mainWeaponAttackActions=[]
+        self.mainWeaponMenu.clear()
+        for pilot in self.parent.battleEngine.pilots:
+            if (pilot.playerId!=self.getPilot().playerId):
+                mainWeaponAction=self.mainWeaponMenu.addAction(pilot.name);
+                self.mainWeaponAttackActions.append(mainWeaponAction)

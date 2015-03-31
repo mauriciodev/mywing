@@ -37,8 +37,8 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         #rect=QtCore.QRect(-1*x/2,-1*y/2,x/2,y/2)
         self.borders=self.scene.addRect(0,0,x,y)
         self.borders.moveBy(-1.*x/2.,-1.*y/2.)
-    def addShip(self, x, y, trigAngle, name="novo", shipName="NewShip"):
-        pilot=self.battleEngine.addPilotByNameAndCoords(name,x,y,trigAngle)
+    def addShip(self, x, y, trigAngle, name="novo", playerId=0):
+        pilot=self.battleEngine.addPilotByNameAndCoords(name,x,y,trigAngle,playerId)
         self.scene.addItem(shipItem(pilot.battleId,parent=self))
         
     def fileSave(self):
@@ -58,10 +58,10 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
             print "Folder does not exist"
     def addBasicSet(self):
         self.addBorders(self.toPixels(120), self.toPixels(120))
-        self.addShip(self.toPixels(-50),self.toPixels(-10), -1*math.pi/2, "Leonardo")
-        self.addShip(self.toPixels(-50),self.toPixels(10), -1*math.pi/2, "Mauricio")
-        self.addShip(self.toPixels(50), self.toPixels(-10), math.pi/2, "Philipe")
-        self.addShip(self.toPixels(50), self.toPixels(10), math.pi/2, "Luiz Claudio")
+        self.addShip(self.toPixels(-45),self.toPixels(-10), -1*math.pi/2, "Leonardo",1)
+        self.addShip(self.toPixels(-45),self.toPixels(10), -1*math.pi/2, "Mauricio",1)
+        self.addShip(self.toPixels(55), self.toPixels(-10), math.pi/2, "Philipe",2)
+        self.addShip(self.toPixels(55), self.toPixels(10), math.pi/2, "Luiz Claudio",2)
     
     def toPixels(self,cm):
         return self.pixelsPerCentimeter*cm

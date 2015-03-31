@@ -20,6 +20,7 @@ class BattleEngine:
         
         #these lists represent the pilots in game and their positions
         self.pilots=[] #list of complete pilots, ready to battle
+        self.players={}
         
         random.seed()
         self.attackResults=['attack','attack','attack','critical','focus','focus','nothing','nothing']
@@ -40,6 +41,14 @@ class BattleEngine:
         for moveId in moveIds:
             moves.append(self.movesLibrary[moveId])
         return moves
+    
+    def addPlayer(self,name):
+        playerId=len(self.players.keys())+1
+        self.players[playerId]=name
+        return playerId
+        
+    def removePlayer(self,playerId):
+        self.players.pop(playerId)
         
     def rollAttackDices(self,n):
         rollResult={'attack':0,'critical':0,'focus':0,'nothing':0}
@@ -47,7 +56,7 @@ class BattleEngine:
             result=random.randint(0,7)
             rollResult[self.attackResults[result]]+=1
         return rollResult
-         
+        
     def rollDefenseDices(self,n):
         rollResult={'evade':0,'focus':0,'nothing':0}
         #3 evade 2 focus 3 nothing
@@ -101,14 +110,16 @@ class BattleEngine:
         for pilot in self.pilotLibrary.values():
             if pilot.name==name:
                 return pilot
+            
     def getMoveById(self,moveId):
         return self.movesLibrary[moveId]
+    
     def getMoveByName(self,moveName):
         for move in self.movesLibrary.values():
             if move.name==moveName:
                 return move
         
-    def addPilotByNameAndCoords(self,name, x, y, trigAngle):
+    def addPilotByNameAndCoords(self,name, x, y, trigAngle,playerId):
         pilot=self.getPilotByName(name)
         if pilot==None:
             return pilot
@@ -117,7 +128,7 @@ class BattleEngine:
         pShip=self.getPilotShip(pilot.id)
         pMoves=self.getPilotMoves(pilot.id)
         battleId=len(self.pilots)
-        pilot.setComplete(pShip, pMoves, battleId, pilotPos)
+        pilot.setComplete(pShip, pMoves, battleId, pilotPos,playerId)
         self.addPilot(pilot)
         return pilot
     
@@ -175,8 +186,8 @@ class BattleEngine:
 if __name__=="__main__":
     test=BattleEngine()
     #test.readPilots()
-    test.addPilotByNameAndCoords("Mauricio", 0, 0, 0)
-    test.addPilotByNameAndCoords("Leonardo", 0, 0, 0)
+    test.addPilotByNameAndCoords("Mauricio", 0, 0, 0,1)
+    test.addPilotByNameAndCoords("Leonardo", 0, 0, 0,2)
     #print test.pilots[0].isComplete()
     test.basicAttack(0, 1)
     #print test.pilots[1].health,test.pilots[1].shield 
