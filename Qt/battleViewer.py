@@ -15,6 +15,12 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         QtGui.QMainWindow.__init__(self, parent)
         Ui_battleViewerDialog.__init__(self, parent)
         self.setupUi(self)
+        #self.connect(self.ui.actionExport, QtCore.SIGNAL('triggered()'), QtCore.SLOT('saveToSvg()'))
+        self.newGame()
+        self.addBasicSet()
+        #self.addShip(100,100)-1.*x/2.,-1.*y/2.
+        #self.addShip(300,100)
+    def newGame(self):
         self.scene=QtGui.QGraphicsScene()
         self.graphicsView.setScene(self.scene)
         self.graphicsView.show()
@@ -24,15 +30,11 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         
         self.battleEngine=BattleEngine()
         self.battleEngine.readPilots()
+        self.battleEngine.messagePrinted.connect(self.logTextEdit.append)
         #for i in range(0, 100):
         #    self.newDataSourceItem(0, i*10)
         self.statusBar().showMessage('Ready')
-        #self.connect(self.ui.actionExport, QtCore.SIGNAL('triggered()'), QtCore.SLOT('saveToSvg()'))
         
-        self.addBasicSet()
-        #self.addShip(100,100)-1.*x/2.,-1.*y/2.
-        #self.addShip(300,100)
- 
     def addBorders(self,x,y):
         #rect=QtCore.QRect(-1*x/2,-1*y/2,x/2,y/2)
         self.borders=self.scene.addRect(0,0,x,y)
@@ -58,10 +60,10 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
             print "Folder does not exist"
     def addBasicSet(self):
         self.addBorders(self.toPixels(120), self.toPixels(120))
-        self.addShip(self.toPixels(-45),self.toPixels(-10), -1*math.pi/2, "Leonardo",1)
-        self.addShip(self.toPixels(-45),self.toPixels(10), -1*math.pi/2, "Mauricio",1)
-        self.addShip(self.toPixels(55), self.toPixels(-10), math.pi/2, "Philipe",2)
-        self.addShip(self.toPixels(55), self.toPixels(10), math.pi/2, "Luiz Claudio",2)
+        self.addShip(self.toPixels(-45),self.toPixels(-10), -1*math.pi/2, "General Leonardo",1)
+        self.addShip(self.toPixels(-45),self.toPixels(10), -1*math.pi/2, "Master Mauricio",1)
+        self.addShip(self.toPixels(55), self.toPixels(-10), math.pi/2, "Darth Philipe",2)
+        self.addShip(self.toPixels(55), self.toPixels(-35), math.pi/2, "Emperor Luiz Claudius",2)
     
     def toPixels(self,cm):
         return self.pixelsPerCentimeter*cm
@@ -91,6 +93,8 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
     def addPilot(self):
         window=addPilot()
         window.show()
+    def printMessage(self,message):
+        self.logTextEdit.append(tr(message))
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)

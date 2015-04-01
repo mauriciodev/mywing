@@ -3,13 +3,13 @@ from position import position
 moveTypesDescription={0:"linear", 1:"curve",2:"strong curve",3:"U turn"}
 
 class move:
-    def __init__(self,id=0,name='NewMove', dx=0,dy=0,rotation=0):
+    def __init__(self,id=0,name='NewMove', dx=0,dy=0,rotation=0,scale=50):
         self.id=id
         self.dx=dx #move along the tangent
         self.dy=dy #move along the perpendicular
         self.rotation=rotation
         self.name=name
-        self.scale=50
+        self.scale=scale
             
     def performMove(self,pos):
         pos.moveBy(self.dx*self.scale,self.dy*self.scale)

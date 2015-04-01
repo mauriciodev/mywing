@@ -8,7 +8,7 @@ class position:
         self.setUnitVector(vx,vy)
     
     def rotate(self,angle):
-        print self.vx,self.vy
+        #print self.vx,self.vy
         rotated=self.rotateVector(self.vx, self.vy, angle)
         self.setUnitVector(rotated[0], rotated[1])
     def getRotation(self):
@@ -36,12 +36,31 @@ class position:
         self.vy=vy/m
         
     def revertTrigAngle(self): 
-        self.trigAngle=math.fmod((azimuth+math.pi),math.pi*2)
+        #self.trigAngle=math.fmod((azimuth+math.pi),math.pi*2)
+        pass
         
-    def getBearing(self,pos2):
-        bearing=pos2.trigAngle-self.trigAngle
-        self.reduceAngle(trigAngle+math.pi)
+    def bearing(self,pos2):
+        dx=pos2.x-self.x
+        dy=pos2.y-self.y
+        cosTheta=(self.vx*dx+self.vy*dy)/math.sqrt(dx**2+dy**2)
+        bearing=math.acos(cosTheta)
+        cross=self.unitVectorCrossProduct(pos2)
+        if abs(cross)!=0.:
+            sign=cross/abs(cross)
+        else: sign=1
+        return bearing*sign
         
+    def distance(self,pos2):
+        return math.sqrt((self.x-pos2.x)**2 + (self.y-pos2.y)**2)
+    
+    def unitVectorCrossProduct(self,pos2):
+        return self.vx*pos2.vy-self.vy*pos2.vx
+    
+    def unitVectorScalarProduct(self,pos2):
+        return self.vx*pos2.vx+self.vy*pos2.vy
+    def unitVectorModule(self):
+        return math.sqrt(self.vx**2+self.vy**2)
+    
     def reduceAngle(self,angle):
         return math.fmod(angle,math.pi*2)
     def getRange(self,pos2):

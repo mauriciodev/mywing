@@ -50,19 +50,19 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuAddPilot">
+   <widget class="QMenu" name="menuAdd_Basic_Set">
     <property name="title">
-     <string>addPilot</string>
+     <string>Add Basic Set</string>
     </property>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuAddPilot"/>
+   <addaction name="menuAdd_Basic_Set"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>104</width>
+     <width>108</width>
      <height>112</height>
     </size>
    </property>
@@ -103,6 +103,9 @@
          <width>200</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -218,5 +221,6 @@
   <slot>fileOpen()</slot>
   <slot>fileSave()</slot>
   <slot>addPilot()</slot>
+  <slot>addBasicSet()</slot>
  </slots>
 </ui>

@@ -23,6 +23,7 @@ class pilot:
         self.currentHealth=self.health
         self.currentShield=self.shield
     def takeDamage(self,n):
+        if n<=0: return
         if (self.shield>0):
             self.shield-=n
             if self.shield<0: #shield broke

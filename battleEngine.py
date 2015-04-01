@@ -1,20 +1,37 @@
 import json
 import random
 import os
+import math
 from pilot import pilot
 from position import position
 from move import move
 from ship import ship
+from PyQt4.QtCore import QObject, pyqtSignal, QString
 
-class BattleEngine:
-    def __init__(self):
+class defaultPrinter(QObject):
+    def __init__(self,battleEngine):
+        super(defaultPrinter,self).__init__()
+        battleEngine.messagePrinted.connect(self.printMessage)
+    def printMessage(self,s):
+        print s
+
+
+class BattleEngine(QObject):
+    messagePrinted=pyqtSignal('QString')
+    def __init__(self,scale=50,shotRange=3):
+        super(BattleEngine,self).__init__()
+        self.shotRange=shotRange #number of unscaled units that remains inside range 1
         #first read the moves
+        self.printMessage("Loading move data.")
         self.movesLibrary={} #this list represents every available move
-        self.readMoves()
+        self.scale=scale
+        self.readMoves(self.scale)
         #then ships, that aggregates moves
+        self.printMessage("Loading ship data.")
         self.shipsLibrary={} #this list represents every available ship
         self.readShips()
         #then pilots that aggregates ships
+        self.printMessage("Loading pilot data.")
         self.pilotLibrary={} #this list represents every available pilot 
         self.readPilots()
         
@@ -67,10 +84,10 @@ class BattleEngine:
     
     def performMove(self,pilotBattleId, moveId):
         startPos=self.getPilotPos(pilotBattleId)
-        print "From: ",startPos.toDict()
+        self.printMessage("From: ",startPos.toDict())
         newPos=self.movesLibrary[moveId].performMove(startPos)
         self.setPilotPos(pilotBattleId, newPos)
-        print "To:",newPos.toDict()
+        self.printMessage( "To:" +str(newPos.toDict()))
         return newPos
     
     def getPilotPos(self,pilotBattleId):
@@ -89,22 +106,42 @@ class BattleEngine:
         #this is a very basic attack sequence just to test how it should work
         #later on this should be replaced by a well timed sequence
         #i'm ignoring focus right now
-        print self.pilots[pilotId1].name, "attacked."
-        attackResults=self.rollAttackDices(self.pilots[pilotId1].attack)
-        print attackResults
-        print self.pilots[pilotId2].name, "tries to avoid the attacks."
-        defenseResults=self.rollDefenseDices(self.pilots[pilotId2].defense)
-        print defenseResults
+        self.printMessage('')
+        distance=self.pilots[pilotId1].position.distance(self.pilots[pilotId2].position)/self.scale
+        bearing=self.pilots[pilotId1].position.bearing(self.pilots[pilotId2].position)
+        self.printMessage(self.pilots[pilotId1].name, "attacked from range %i" % math.ceil(distance/self.shotRange), "and bearing %i."% math.degrees(bearing))
+        attackDices=self.pilots[pilotId1].attack
+        defenseDices=self.pilots[pilotId2].defense
+        if (distance > 0) and (distance <=1*self.shotRange):
+            attackDices+=1
+        if (distance > 2*self.shotRange) and (distance <=3*self.shotRange):
+            defenseDices+=1
+        if distance > 3*self.shotRange:
+            self.printMessage("Out of range. Distance:",distance)
+            return
+        if (bearing<math.radians(self.pilots[pilotId1].attackAngle[0])) or (bearing>math.radians(self.pilots[pilotId1].attackAngle[1])):
+            self.printMessage("Enemy out of attack angle.")
+            return 
+        attackResults=self.rollAttackDices(attackDices)
+        self.printMessage("Attack dices ("+str(attackDices)+"):")
+        self.printMessage('  ',attackResults)
+        self.printMessage(self.pilots[pilotId2].name, "tries to avoid the attacks.")
+        defenseResults=self.rollDefenseDices(defenseDices)
+        self.printMessage("Defense dices("+str(defenseDices)+"):")
+        self.printMessage('  ',defenseResults)
         #first, lower attack using evade
         attackResults['attack']-=defenseResults['evade']
         #if attack is negative, it lowers criticals too
         if (attackResults['attack']<0): 
             attackResults['critical']+=attackResults['attack']
             attackResults['attack']=0
+        if(attackResults<0): attackResults=0
         damage=attackResults['attack']+attackResults['critical']
-        print self.pilots[pilotId2].name, "took",attackResults['attack'],"regular hits and", attackResults['critical'], "critical hits."
-        self.pilots[pilotId2].takeDamage(damage)
-        print self.pilots[pilotId2].name, "now has",self.pilots[pilotId2].shield,"shield and",self.pilots[pilotId2].health, "health" 
+        self.printMessage(self.pilots[pilotId2].name, "took",attackResults['attack'],"regular hits and", attackResults['critical'], "critical hits.")
+        if damage>0: 
+            self.pilots[pilotId2].takeDamage(damage)
+        self.printMessage(self.pilots[pilotId2].name, "now has",self.pilots[pilotId2].shield,"shield and",self.pilots[pilotId2].health, "health")
+        self.printMessage('') 
             
     def getPilotByName(self,name):
         for pilot in self.pilotLibrary.values():
@@ -149,12 +186,12 @@ class BattleEngine:
                 p.fromDict(json.loads(line))
                 self.pilotLibrary[p.id]=p
                 #print p.asDict()
-    def readMoves(self):
+    def readMoves(self,scale=50):
         self.movesLibrary={}
         dirname, filename = os.path.split(os.path.abspath(__file__))
         with open(os.path.join(dirname,'data/moves.json')) as f:
             for line in f:
-                m=move()
+                m=move(scale)
                 m.fromDict(json.loads(line))
                 self.movesLibrary[m.id]=m
     def readShips(self):
@@ -181,13 +218,19 @@ class BattleEngine:
     def getCurrentTurnStageName(self):
         return self.turnStages[self.currentTurn]
     
+    def printMessage(self,*args):
+        message=''
+        for msg in args:
+            message+=str(msg)+' '
+        self.messagePrinted.emit(message)
 
     
 if __name__=="__main__":
     test=BattleEngine()
+    p=defaultPrinter(test)
     #test.readPilots()
-    test.addPilotByNameAndCoords("Mauricio", 0, 0, 0,1)
-    test.addPilotByNameAndCoords("Leonardo", 0, 0, 0,2)
+    test.addPilotByNameAndCoords("Master Mauricio", 0, 0, 0,1)
+    test.addPilotByNameAndCoords("General Leonardo", 0, 10, 0,2)
     #print test.pilots[0].isComplete()
     test.basicAttack(0, 1)
     #print test.pilots[1].health,test.pilots[1].shield 
