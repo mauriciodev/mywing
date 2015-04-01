@@ -12,12 +12,15 @@ class defaultPrinter(QObject):
     def __init__(self,battleEngine):
         super(defaultPrinter,self).__init__()
         battleEngine.messagePrinted.connect(self.printMessage)
+        battleEngine.pilotDestroyed.connect(self.pilotDestroyed)
     def printMessage(self,s):
         print s
-
+    def pilotDestroyed(self,pilotId):
+        self.printMessage("Pilot %i was destroyed." % pilotId)
 
 class BattleEngine(QObject):
     messagePrinted=pyqtSignal('QString')
+    pilotDestroyed=pyqtSignal('int')
     def __init__(self,scale=50,shotRange=3):
         super(BattleEngine,self).__init__()
         self.shotRange=shotRange #number of unscaled units that remains inside range 1
@@ -82,6 +85,11 @@ class BattleEngine(QObject):
             rollResult[self.defenseResults[result]]+=1
         return rollResult
     
+    def pilotKilled(self, pilotId):
+        self.pilotDestroyed.emit(pilotId)
+        deadPilot=self.pilots.pop(pilotId)
+        self.printMessage("Pilot %s was destroyed." % deadPilot.name)
+    
     def performMove(self,pilotBattleId, moveId):
         startPos=self.getPilotPos(pilotBattleId)
         self.printMessage("From: ",startPos.toDict())
@@ -135,14 +143,19 @@ class BattleEngine(QObject):
         if (attackResults['attack']<0): 
             attackResults['critical']+=attackResults['attack']
             attackResults['attack']=0
-        if(attackResults<0): attackResults=0
+        if(attackResults['critical']<0): attackResults['critical']=0
         damage=attackResults['attack']+attackResults['critical']
         self.printMessage(self.pilots[pilotId2].name, "took",attackResults['attack'],"regular hits and", attackResults['critical'], "critical hits.")
         if damage>0: 
             self.pilots[pilotId2].takeDamage(damage)
         self.printMessage(self.pilots[pilotId2].name, "now has",self.pilots[pilotId2].shield,"shield and",self.pilots[pilotId2].health, "health")
         self.printMessage('') 
+        self.checkPilot(pilotId2)
             
+    def checkPilot(self,pilotId):
+        if self.pilots[pilotId].health<1:
+            self.pilotKilled(pilotId)
+    
     def getPilotByName(self,name):
         for pilot in self.pilotLibrary.values():
             if pilot.name==name:
@@ -223,7 +236,7 @@ class BattleEngine(QObject):
         for msg in args:
             message+=str(msg)+' '
         self.messagePrinted.emit(message)
-
+    
     
 if __name__=="__main__":
     test=BattleEngine()
@@ -232,7 +245,8 @@ if __name__=="__main__":
     test.addPilotByNameAndCoords("Master Mauricio", 0, 0, 0,1)
     test.addPilotByNameAndCoords("General Leonardo", 0, 10, 0,2)
     #print test.pilots[0].isComplete()
-    test.basicAttack(0, 1)
+    while len(test.pilots)>1:
+        test.basicAttack(0, 1)
     #print test.pilots[1].health,test.pilots[1].shield 
     
     #for move in test.pilots[0].moves:

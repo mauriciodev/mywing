@@ -31,10 +31,20 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         self.battleEngine=BattleEngine()
         self.battleEngine.readPilots()
         self.battleEngine.messagePrinted.connect(self.logTextEdit.append)
+        self.battleEngine.pilotDestroyed.connect(self.pilotDestroyed)
         #for i in range(0, 100):
         #    self.newDataSourceItem(0, i*10)
         self.statusBar().showMessage('Ready')
         
+    def pilotDestroyed(self,pilotId):
+         item=self.getPilotShipItem(pilotId)
+         self.scene.removeItem(item)
+        
+    def getPilotShipItem(self,pilotId):
+        for item in self.scene.items():
+            if type(item) is shipItem:
+                if pilotId==item.getPilot().battleId:
+                    return item
     def addBorders(self,x,y):
         #rect=QtCore.QRect(-1*x/2,-1*y/2,x/2,y/2)
         self.borders=self.scene.addRect(0,0,x,y)
