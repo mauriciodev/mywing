@@ -7,7 +7,7 @@ sys.path.append(os.path.split(dirname)[0])
 from battleEngine import BattleEngine
 from battleViewerDialog import Ui_battleViewerDialog
 #from shipItem import shipItem
-from scenarioItem import scenarioItem
+
 from addPilot import addPilot
 from PyQt4 import QtGui,  QtSvg, QtCore
 from attackAreaItem import attackAreaItem 
