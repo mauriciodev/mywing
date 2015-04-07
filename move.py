@@ -1,28 +1,46 @@
 import math
-from position import position
+from PyQt4 import QtCore, QtGui
 moveTypesDescription={0:"linear", 1:"curve",2:"strong curve",3:"U turn"}
 
 class move:
-    def __init__(self,id=0,name='NewMove', dx=0,dy=0,rotation=0,scale=50):
+    def __init__(self,id=0,name='NewMove', dx=0,dy=0,rotation=0,scale=10):
         self.id=id
-        self.dx=dx #move along the tangent
-        self.dy=dy #move along the perpendicular
+        self.dx=dx*scale #move along the tangent
+        self.dy=dy*scale #move along the perpendicular
         self.rotation=rotation
         self.name=name
         self.scale=scale
             
-    def performMove(self,pos):
-        pos.moveBy(self.dx*self.scale,self.dy*self.scale)
-        pos.rotate(self.rotation)
-        return pos
+    def performMove(self,mini):
+        newPos=self.standardMove(mini)
+        
+        return newPos
     
     def fromDict(self,dict):
         self.id=dict['id']
-        self.dx=dict['dx'] #move along the tangent
-        self.dy=dict['dy'] #move along the perpendicular
-        self.rotation=math.radians(dict['rotation'])
+        self.dx=dict['dx']*self.scale #move along the tangent
+        self.dy=dict['dy']*self.scale #move along the perpendicular
+        self.rotation=dict['rotation']
         self.name=dict['name']
-
+        
+    def standardMove(self,mini):
+        v0=QtGui.QVector2D(mini.getPos())
+        uVec=mini.getUnitVector()
+        normalVec=self.rotateVector(uVec, -90)
+        v1=v0+uVec*self.dx+normalVec*self.dy
+        mini.setPos(v1.toPointF())
+        mini.doRotate(self.rotation)
+        print self.rotation
+        print mini.rotation()
+        print mini.rot
+        return mini.getPos()
+        
+    def rotateVector(self,vec,angle):
+        angle=math.radians(angle)
+        vx1=vec.x()*math.cos(angle)-vec.y()*math.sin(angle) 
+        vy1=vec.x()*math.sin(angle)+vec.y()*math.cos(angle)
+        return QtGui.QVector2D(vx1,vy1)
+        
     """def performMove(self,startPosition):
         if moveType=='line':
             return self._performLine(startPosition)
@@ -69,5 +87,5 @@ if __name__=="__main__":
     test=move()
     #print math.degrees(test.revertTrigAngle(math.pi/3))
     #print math.degrees(test.revertTrigAngle(math.pi*4/3))
-    print test.performMove2(position(0,0,math.radians(90)), 10,10, math.radians(90))
-    print test.circularMove(position(0,0,math.radians(90)), 10, math.radians(90))
+    print test.performMove2(position(0,0,math.radians(90)), 10,10, 90)
+    print test.circularMove(position(0,0,math.radians(90)), 10, 90)

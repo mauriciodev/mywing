@@ -1,12 +1,13 @@
 import json
-import random
-import os
-import math
-from pilot import pilot
+import random,math
+import os,sys
+
 from position import position
-from move import move
-from ship import ship
 from PyQt4.QtCore import QObject, pyqtSignal, QString
+from pilotFactory import PilotFactory
+from miniature import miniature
+from PyQt4 import QtGui,  QtSvg, QtCore
+from PyQt4.QtCore import *
 
 class defaultPrinter(QObject):
     def __init__(self,battleEngine):
@@ -21,25 +22,12 @@ class defaultPrinter(QObject):
 class BattleEngine(QObject):
     messagePrinted=pyqtSignal('QString')
     pilotDestroyed=pyqtSignal('int')
-    def __init__(self,scale=50,shotRange=3):
+    def __init__(self,scale=2.5,shotRange=10,bounds=[-450,-450,450,450]):
         super(BattleEngine,self).__init__()
         self.shotRange=shotRange #number of unscaled units that remains inside range 1
-        #first read the moves
-        self.printMessage("Loading move data.")
-        self.movesLibrary={} #this list represents every available move
         self.scale=scale
-        self.readMoves(self.scale)
-        #then ships, that aggregates moves
-        self.printMessage("Loading ship data.")
-        self.shipsLibrary={} #this list represents every available ship
-        self.readShips()
-        #then pilots that aggregates ships
-        self.printMessage("Loading pilot data.")
-        self.pilotLibrary={} #this list represents every available pilot 
-        self.readPilots()
-        
         #these lists represent the pilots in game and their positions
-        self.pilots=[] #list of complete pilots, ready to battle
+        self.miniatures=[] #list of complete pilots, ready to battle
         self.players={}
         
         random.seed()
@@ -50,17 +38,9 @@ class BattleEngine(QObject):
         self.currentStage=0
         self.currentTurn=0
         self.playerSequence=[]
-        
-        
-    def getPilotShip(self,pilotId):
-        return self.shipsLibrary[self.pilotLibrary[pilotId].shipId]
-    
-    def getPilotMoves(self,pilotId):
-        moveIds=self.getPilotShip(pilotId).moveIds
-        moves=[]
-        for moveId in moveIds:
-            moves.append(self.movesLibrary[moveId])
-        return moves
+        self.bounds=bounds
+        self.pilotFactory=PilotFactory(self)
+        self.scene=QtGui.QGraphicsScene()
     
     def addPlayer(self,name):
         playerId=len(self.players.keys())+1
@@ -85,41 +65,24 @@ class BattleEngine(QObject):
             rollResult[self.defenseResults[result]]+=1
         return rollResult
     
-    def pilotKilled(self, pilotId):
-        self.pilotDestroyed.emit(pilotId)
-        deadPilot=self.pilots.pop(pilotId)
-        self.printMessage("Pilot %s was destroyed." % deadPilot.name)
+    def pilotKilled(self, mini):
+        self.pilotDestroyed.emit(mini.miniatureId)
+        self.miniatures.pop(mini.miniatureId)
+        self.printMessage("Pilot %s was destroyed." % mini.pilot.name)
     
-    def performMove(self,pilotBattleId, moveId):
-        startPos=self.getPilotPos(pilotBattleId)
-        self.printMessage("From: ",startPos.toDict())
-        newPos=self.movesLibrary[moveId].performMove(startPos)
-        self.setPilotPos(pilotBattleId, newPos)
-        self.printMessage( "To:" +str(newPos.toDict()))
-        return newPos
-    
-    def getPilotPos(self,pilotBattleId):
-        return self.pilots[pilotBattleId].position
-    
-    def setPilotPos(self,pilotBattleId,newPos):
-        self.pilots[pilotBattleId].position=newPos
-    
-    def getRange(self,pilotId1,pilotId2):
-        return self.positions[pilotId1].getRange(self.positions[pilotId2])
-    
-    def isInRange(self,pilotId1,pilotId2):
-        return self.positions[pilotId1].isInRange(self.positions[pilotId2])
         
-    def basicAttack(self,pilotId1,pilotId2):
+    def basicAttack(self,m1,m2):
         #this is a very basic attack sequence just to test how it should work
         #later on this should be replaced by a well timed sequence
         #i'm ignoring focus right now
-        self.printMessage('')
-        distance=self.pilots[pilotId1].position.distance(self.pilots[pilotId2].position)/self.scale
-        bearing=self.pilots[pilotId1].position.bearing(self.pilots[pilotId2].position)
-        self.printMessage(self.pilots[pilotId1].name, "attacked from range %i" % math.ceil(distance/self.shotRange), "and bearing %i."% math.degrees(bearing))
-        attackDices=self.pilots[pilotId1].attack
-        defenseDices=self.pilots[pilotId2].defense
+        #self.printMessage('')
+        distance=m1.range(m2)
+        #distance=self.pilots[pilotId1].position.distance(m2.pilot.position)#/self.scale
+        #bearing=self.pilots[pilotId1].position.bearing(m2.pilot.position)
+        bearing=m1.bearing(m2)
+        self.printMessage(m1.pilot.name, "attacked from range %i" % distance, "and bearing %i."% bearing)
+        attackDices=m1.pilot.attack
+        defenseDices=m2.pilot.defense
         if (distance > 0) and (distance <=1*self.shotRange):
             attackDices+=1
         if (distance > 2*self.shotRange) and (distance <=3*self.shotRange):
@@ -127,13 +90,13 @@ class BattleEngine(QObject):
         if distance > 3*self.shotRange:
             self.printMessage("Out of range. Distance:",distance)
             return
-        if (bearing<math.radians(self.pilots[pilotId1].attackAngle[0])) or (bearing>math.radians(self.pilots[pilotId1].attackAngle[1])):
+        if (bearing<m1.pilot.attackAngle[0]) or (bearing>m1.pilot.attackAngle[1]):
             self.printMessage("Enemy out of attack angle.")
             return 
         attackResults=self.rollAttackDices(attackDices)
         self.printMessage("Attack dices ("+str(attackDices)+"):")
         self.printMessage('  ',attackResults)
-        self.printMessage(self.pilots[pilotId2].name, "tries to avoid the attacks.")
+        self.printMessage(m2.pilot.name, "tries to avoid the attacks.")
         defenseResults=self.rollDefenseDices(defenseDices)
         self.printMessage("Defense dices("+str(defenseDices)+"):")
         self.printMessage('  ',defenseResults)
@@ -145,83 +108,51 @@ class BattleEngine(QObject):
             attackResults['attack']=0
         if(attackResults['critical']<0): attackResults['critical']=0
         damage=attackResults['attack']+attackResults['critical']
-        self.printMessage(self.pilots[pilotId2].name, "took",attackResults['attack'],"regular hits and", attackResults['critical'], "critical hits.")
+        self.printMessage(m2.pilot.name, "took",attackResults['attack'],"regular hits and", attackResults['critical'], "critical hits.")
         if damage>0: 
-            self.pilots[pilotId2].takeDamage(damage)
-        self.printMessage(self.pilots[pilotId2].name, "now has",self.pilots[pilotId2].shield,"shield and",self.pilots[pilotId2].health, "health")
+            m2.pilot.takeDamage(damage)
+        self.printMessage(m2.pilot.name, "now has",m2.pilot.shield,"shield and",m2.pilot.health, "health")
         self.printMessage('') 
-        self.checkPilot(pilotId2)
+        self.checkPilot(m2)
             
-    def checkPilot(self,pilotId):
-        if self.pilots[pilotId].health<1:
-            self.pilotKilled(pilotId)
+    def checkPilot(self,mini):
+        if mini.pilot.health<1:
+            self.pilotKilled(mini)
     
-    def getPilotByName(self,name):
-        for pilot in self.pilotLibrary.values():
-            if pilot.name==name:
-                return pilot
-            
-    def getMoveById(self,moveId):
-        return self.movesLibrary[moveId]
-    
-    def getMoveByName(self,moveName):
-        for move in self.movesLibrary.values():
-            if move.name==moveName:
-                return move
+
+    def addBorders(self,scenarioName):
+        #rect=QtCore.QRect(-1*x/2,-1*y/2,x/2,y/2)
+        b=self.bounds
+        b=map(lambda x:x*self.scale,b)
+        self.borders=self.scene.addRect(b[0],b[1],b[2]-b[0],b[3]-b[1])
+        dirname, filename = os.path.split(os.path.abspath(__file__))
+        imageFileName=os.path.join(dirname,"images/scenarios",scenarioName+".jpg")
+        pixmap=QtGui.QPixmap(imageFileName)
+        pixmap=pixmap.scaled(b[2]-b[0],b[3]-b[1]);
+        self.backgroundPixmap=self.scene.addPixmap(pixmap)
+        self.backgroundPixmap.setPos(b[0],b[1])
+        self.backgroundPixmap.setZValue(-1)
+
         
     def addPilotByNameAndCoords(self,name, x, y, trigAngle,playerId):
-        pilot=self.getPilotByName(name)
-        if pilot==None:
-            return pilot
-        pilotPos=position(x,y)
-        pilotPos.rotate(trigAngle)
-        pShip=self.getPilotShip(pilot.id)
-        pMoves=self.getPilotMoves(pilot.id)
-        battleId=len(self.pilots)
-        pilot.setComplete(pShip, pMoves, battleId, pilotPos,playerId)
-        self.addPilot(pilot)
-        return pilot
+        p=self.pilotFactory.getPilotByName(name)
+        if p==None:
+            return p
+        #pilotPos=position(x,y)
+        #pilotPos.rotate(trigAngle)
+        miniId=len(self.miniatures)
+        m=miniature(p,playerId,battleEngine=self, miniatureId=miniId)
+        self.miniatures.append(m)
+        self.scene.addItem(m)
+        m.setPos(x,y)
+        m.doRotate(trigAngle)
+        return m
     
-    def getActivePilotIdByName(self,name):
-        for i,p in enumerate(self.pilots):
-            if p.name==name:
-                return i
-    
-    def addPilot(self,pilot):
-        self.pilots.append(pilot)
-    
-    def readPilots(self):
-        self.pilotLibrary={}
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        with open(os.path.join(dirname,'data/pilots.json')) as f:
-            for line in f:
-                p=pilot()
-                p.fromDict(json.loads(line))
-                self.pilotLibrary[p.id]=p
-                #print p.asDict()
-    def readMoves(self,scale=50):
-        self.movesLibrary={}
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        with open(os.path.join(dirname,'data/moves.json')) as f:
-            for line in f:
-                m=move(scale)
-                m.fromDict(json.loads(line))
-                self.movesLibrary[m.id]=m
-    def readShips(self):
-        self.shipsLibrary={}
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        with open(os.path.join(dirname,'data/ships.json')) as f:
-            for line in f:
-                s=ship()
-                s.fromDict(json.loads(line))
-                self.shipsLibrary[s.id]=s
-    def savePilots(self):
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        pilotFile=open(os.path.join(dirname,'data/pilots.json'),'w')
-        for pilot in self.pilotLibrary:
-            pilotFile.write(json.dumps(pilot.asDict()))
-        pilotFile.close() 
-        
+    def getMiniatureByName(self,name):
+        for i,m in enumerate(self.miniatures):
+            if m.pilot.name==name:
+                return m
+       
     def nextTurnStage(self):
         self.currentStage+=1
         #restarting the turn sequence
@@ -236,22 +167,27 @@ class BattleEngine(QObject):
         for msg in args:
             message+=str(msg)+' '
         self.messagePrinted.emit(message)
+        print message
     
     
 if __name__=="__main__":
+    app = QtGui.QApplication(sys.argv)
     test=BattleEngine()
     p=defaultPrinter(test)
     #test.readPilots()
-    test.addPilotByNameAndCoords("Master Mauricio", 0, 0, 0,1)
-    test.addPilotByNameAndCoords("General Leonardo", 0, 10, 0,2)
+    m1=test.addPilotByNameAndCoords("Master Mauricio", 0, 0, 0,1)
+    m2=test.addPilotByNameAndCoords("General Leonardo", 0, 10, 0,2)
     #print test.pilots[0].isComplete()
-    while len(test.pilots)>1:
-        test.basicAttack(0, 1)
+    while len(test.miniatures)>1:
+        test.basicAttack(m1,m2)
     #print test.pilots[1].health,test.pilots[1].shield 
-    
+    m1.move(m1.pilot.moves[1])
     #for move in test.pilots[0].moves:
     #    print move.name
     #print test.rollAttackDices(10)
     #print test.rollDefenseDices(10)
     #test.savePilots()
+    
+    #gen = QtSvg.QSvgGenerator()
+    sys.exit(app.exec_())
     

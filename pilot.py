@@ -1,7 +1,7 @@
 from ship import ship
 
 
-"""Pilots store pilot data. If it's a complete pilot, it also stores the ship and moves necessary for battle calculations."""
+"""Pilots store pilot data."""
 class pilot:
     def __init__(self,id=0,name='',skillLevel=0,attack=0,defense=0,health=0,shield=0, shipId=0,cost=0):
         self.id=0
@@ -12,12 +12,12 @@ class pilot:
         self.health=health
         self.shield=shield
         self.attackAngle=(-40,40) #bearing
-        self.shipId=shipId
+        self.shipId=-1
+        self.ship=None
         self.maneuvers=[]
         self.improvements=[]
         self.cost=cost
         self.resetHealth()
-        self.setIncomplete()
         
     def resetHealth(self):
         self.currentHealth=self.health
@@ -32,7 +32,7 @@ class pilot:
         else: #no shield
             self.health-=n
     def getCost(self):
-        return self.skillLevel+self.attack+self.defense+self.health+self.shield
+        return self.cost
     def asDict(self):
         """output={}
         output['id']=self.id
@@ -61,33 +61,12 @@ class pilot:
         #self.=dict['improvements']
         self.shipId=dict['shipId']
         self.cost=dict['cost']
-        self.setIncomplete()
 
-    def setComplete(self,ship, moves,battleId,pos,playerId):
-        self.moves=moves
-        self.ship=ship
-        self.battleId=battleId
-        self.position=pos
-        self.playerId=playerId
-    def setIncomplete(self):
-        self.ship=None
-        self.moves=[]
-        self.battleId=-1
-        self.position=None
-        self.playerId=-1
-    def isComplete(self):
-        t1=(len(self.moves)>0)
-        t2=(self.ship!=None)
-        t3=(self.battleId!=-1)
-        t4=(self.position!=None)
-        t5=(self.position!=-1)
-        return (t1 and t2 and t3 and t4 and t5) 
-    
+  
     def getMoveByName(self,name):
-        if self.isComplete():
-            for move in self.moves:
-                if move.name==name:
-                    return move
+        for move in self.moves:
+            if move.name==name:
+                return move
         return None
     def getMoveCost(self,moveName):
         move=self.getMoveByName(moveName)

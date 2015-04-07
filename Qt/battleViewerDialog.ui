@@ -43,50 +43,31 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen"/>
+    <widget class="QMenu" name="menuNew_game">
+     <property name="title">
+      <string>New game</string>
+     </property>
+     <addaction name="actionNew_basic_set_game"/>
+    </widget>
+    <addaction name="menuNew_game"/>
     <addaction name="actionSave"/>
     <addaction name="separator"/>
     <addaction name="actionExport"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuAdd_Basic_Set">
+   <widget class="QMenu" name="menuLibraries">
     <property name="title">
-     <string>Add Basic Set</string>
+     <string>Libraries</string>
     </property>
+    <addaction name="actionPilots"/>
+    <addaction name="actionShips"/>
+    <addaction name="actionScenarios"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuAdd_Basic_Set"/>
+   <addaction name="menuLibraries"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="dockWidget">
-   <property name="minimumSize">
-    <size>
-     <width>108</width>
-     <height>112</height>
-    </size>
-   </property>
-   <property name="windowTitle">
-    <string>Pilots</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QListWidget" name="listWidget">
-       <property name="minimumSize">
-        <size>
-         <width>90</width>
-         <height>0</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <widget class="QDockWidget" name="dockWidget_2">
    <property name="windowTitle">
     <string>Battle log</string>
@@ -127,14 +108,6 @@
     <string>Export image</string>
    </property>
   </action>
-  <action name="actionOpen">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>New game</string>
-   </property>
-  </action>
   <action name="actionSave">
    <property name="enabled">
     <bool>true</bool>
@@ -146,6 +119,26 @@
   <action name="actionActionAddPilot">
    <property name="text">
     <string>actionAddPilot</string>
+   </property>
+  </action>
+  <action name="actionNew_basic_set_game">
+   <property name="text">
+    <string>New basic set game</string>
+   </property>
+  </action>
+  <action name="actionPilots">
+   <property name="text">
+    <string>Pilots</string>
+   </property>
+  </action>
+  <action name="actionShips">
+   <property name="text">
+    <string>Ships</string>
+   </property>
+  </action>
+  <action name="actionScenarios">
+   <property name="text">
+    <string>Scenarios</string>
    </property>
   </action>
  </widget>
@@ -212,6 +205,22 @@
     <hint type="destinationlabel">
      <x>360</x>
      <y>245</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNew_basic_set_game</sender>
+   <signal>triggered()</signal>
+   <receiver>battleViewerDialog</receiver>
+   <slot>addBasicSet()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>319</y>
     </hint>
    </hints>
   </connection>
