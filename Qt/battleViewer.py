@@ -10,33 +10,52 @@ from battleViewerDialog import Ui_battleViewerDialog
 from scenarioItem import scenarioItem
 from addPilot import addPilot
 from PyQt4 import QtGui,  QtSvg, QtCore
+from attackAreaItem import attackAreaItem 
 
 class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
-    def __init__(self, parent=None,scale=2.5):
+    def __init__(self, parent=None,scale=2.5,range=40*2.5):
         QtGui.QMainWindow.__init__(self, parent)
         Ui_battleViewerDialog.__init__(self, parent)
         self.setupUi(self)
         self.scale=scale
+        self.range=range*scale
         #self.connect(self.ui.actionExport, QtCore.SIGNAL('triggered()'), QtCore.SLOT('saveToSvg()'))
         self.newGame()
         self.addBasicSet()
+
         
         #self.graphicsView.scale(5,5)
         #scale of centimeters to pixels
         
         #self.addShip(100,100)-1.*x/2.,-1.*y/2.
         #self.addShip(300,100)
+        
+    def toggleShowRange(self):
+        if self.attackArea.isVisible():
+            self.attackArea.hide()
+            self.actionRange_ruler.setChecked(False)
+        else:
+            self.attackArea.show()
+            self.actionRange_ruler.setChecked(True)
+        
     def newGame(self):
-        self.battleEngine=BattleEngine(self.scale)
+        self.battleEngine=BattleEngine(self.scale,self.range)
         self.graphicsView.setScene(self.battleEngine.scene)
         self.graphicsView.show()
         self.battleEngine.messagePrinted.connect(self.logTextEdit.append)
         self.battleEngine.pilotDestroyed.connect(self.pilotDestroyed)
+        self.battleEngine.addBorders('maxresdefault')
         #for i in range(0, 100):
         #    self.newDataSourceItem(0, i*10)
         self.statusBar().showMessage('Ready')
+        self.attackArea=attackAreaItem(self,QtCore.QPointF(0,0), self.range)
+        self.attackArea.hide()
+        self.battleEngine.scene.addItem(self.attackArea)
         
-        
+    def newBasicSetGame(self):
+        self.newGame()
+        self.addBasicSet()
+    
     def pilotDestroyed(self,pilotId):
         item=self.getPilotShipItem(pilotId)
         self.scene.removeItem(item)
@@ -62,7 +81,6 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         else:
             print "Folder does not exist"
     def addBasicSet(self):
-        self.battleEngine.addBorders('maxresdefault')
         self.addShip(self.toPixels(-100),self.toPixels(0), -90, "General Leonardo",1)
         #self.addShip(self.toPixels(-45),self.toPixels(10), -1*math.pi/2, "Master Mauricio",1)
         self.addShip(self.toPixels(100), self.toPixels(20), 90, "Darth Philipe",2)

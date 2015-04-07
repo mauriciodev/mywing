@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>934</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -47,6 +47,7 @@
      <property name="title">
       <string>New game</string>
      </property>
+     <addaction name="actionNew_empty_game"/>
      <addaction name="actionNew_basic_set_game"/>
     </widget>
     <addaction name="menuNew_game"/>
@@ -63,9 +64,18 @@
     <addaction name="actionPilots"/>
     <addaction name="actionShips"/>
     <addaction name="actionScenarios"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_basic_set"/>
+   </widget>
+   <widget class="QMenu" name="menuShow_range">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionRange_ruler"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuLibraries"/>
+   <addaction name="menuShow_range"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget_2">
@@ -141,6 +151,24 @@
     <string>Scenarios</string>
    </property>
   </action>
+  <action name="actionRange_ruler">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Range ruler</string>
+   </property>
+  </action>
+  <action name="actionAdd_basic_set">
+   <property name="text">
+    <string>Add basic set</string>
+   </property>
+  </action>
+  <action name="actionNew_empty_game">
+   <property name="text">
+    <string>New empty game</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -193,26 +221,58 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionOpen</sender>
+   <sender>actionNew_basic_set_game</sender>
    <signal>triggered()</signal>
    <receiver>battleViewerDialog</receiver>
-   <slot>fileOpen()</slot>
+   <slot>newBasicSetGame()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>360</x>
-     <y>245</y>
+     <x>466</x>
+     <y>319</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>actionNew_basic_set_game</sender>
+   <sender>actionRange_ruler</sender>
+   <signal>triggered()</signal>
+   <receiver>battleViewerDialog</receiver>
+   <slot>toggleShowRange()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>189</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAdd_basic_set</sender>
    <signal>triggered()</signal>
    <receiver>battleViewerDialog</receiver>
    <slot>addBasicSet()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNew_empty_game</sender>
+   <signal>triggered()</signal>
+   <receiver>battleViewerDialog</receiver>
+   <slot>newGame()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -231,5 +291,8 @@
   <slot>fileSave()</slot>
   <slot>addPilot()</slot>
   <slot>addBasicSet()</slot>
+  <slot>toggleShowRange()</slot>
+  <slot>newGame()</slot>
+  <slot>newBasicSetGame()</slot>
  </slots>
 </ui>

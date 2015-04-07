@@ -3,7 +3,7 @@ from PyQt4 import QtCore, QtGui
 moveTypesDescription={0:"linear", 1:"curve",2:"strong curve",3:"U turn"}
 
 class move:
-    def __init__(self,id=0,name='NewMove', dx=0,dy=0,rotation=0,scale=10):
+    def __init__(self,id=0,name='NewMove', dx=0,dy=0,rotation=0,scale=0):
         self.id=id
         self.dx=dx*scale #move along the tangent
         self.dy=dy*scale #move along the perpendicular

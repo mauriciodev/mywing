@@ -5,8 +5,8 @@ from move import move
 
 class PilotFactory:
     "This class should have a parent to report it's messages."
-    def __init__(self,parent=None):
-        self.scale=5
+    def __init__(self,parent=None,scale=0):
+        self.scale=scale
         self.parent=parent
         self.pilotLibrary = {}
         self.readPilots()
@@ -18,7 +18,7 @@ class PilotFactory:
             print dir(self.parent)
 
     def getPilotByName(self,name):
-        print self.pilotLibrary
+        #print self.pilotLibrary
         for pilot in self.pilotLibrary.values():
             if pilot.name==name:
                 return pilot
@@ -27,7 +27,7 @@ class PilotFactory:
         self.printMessage("Loading ship data.")
         self.readShips()
         self.printMessage("Loading movement data.")
-        self.readMoves(self.scale)
+        self.readMoves()
         self.pilotLibrary = {}
         self.printMessage("Loading pilot data.")
         dirname, filename = os.path.split(os.path.abspath(__file__))
@@ -42,12 +42,12 @@ class PilotFactory:
                 
         
                 # print p.asDict()
-    def readMoves(self, scale=50):
+    def readMoves(self):
         self.movesLibrary = {}
         dirname, filename = os.path.split(os.path.abspath(__file__))
         with open(os.path.join(dirname, 'data/moves.json')) as f:
             for line in f:
-                m = move(scale)
+                m = move(scale=self.scale)
                 m.fromDict(json.loads(line))
                 self.movesLibrary[m.id] = m
     def readShips(self):

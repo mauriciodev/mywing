@@ -22,7 +22,7 @@ class defaultPrinter(QObject):
 class BattleEngine(QObject):
     messagePrinted=pyqtSignal('QString')
     pilotDestroyed=pyqtSignal('int')
-    def __init__(self,scale=2.5,shotRange=10,bounds=[-450,-450,450,450]):
+    def __init__(self,scale=2.5,shotRange=4*2.5,bounds=[-450,-450,450,450]):
         super(BattleEngine,self).__init__()
         self.shotRange=shotRange #number of unscaled units that remains inside range 1
         self.scale=scale
@@ -39,7 +39,7 @@ class BattleEngine(QObject):
         self.currentTurn=0
         self.playerSequence=[]
         self.bounds=bounds
-        self.pilotFactory=PilotFactory(self)
+        self.pilotFactory=PilotFactory(self,self.scale)
         self.scene=QtGui.QGraphicsScene()
     
     def addPlayer(self,name):
@@ -69,6 +69,7 @@ class BattleEngine(QObject):
         self.pilotDestroyed.emit(mini.miniatureId)
         self.miniatures.pop(mini.miniatureId)
         self.printMessage("Pilot %s was destroyed." % mini.pilot.name)
+        self.pilotDestroyed.emit(mini.miniatureId)
     
         
     def basicAttack(self,m1,m2):
@@ -77,8 +78,6 @@ class BattleEngine(QObject):
         #i'm ignoring focus right now
         #self.printMessage('')
         distance=m1.range(m2)
-        #distance=self.pilots[pilotId1].position.distance(m2.pilot.position)#/self.scale
-        #bearing=self.pilots[pilotId1].position.bearing(m2.pilot.position)
         bearing=m1.bearing(m2)
         self.printMessage(m1.pilot.name, "attacked from range %i" % distance, "and bearing %i."% bearing)
         attackDices=m1.pilot.attack
@@ -141,7 +140,7 @@ class BattleEngine(QObject):
         #pilotPos=position(x,y)
         #pilotPos.rotate(trigAngle)
         miniId=len(self.miniatures)
-        m=miniature(p,playerId,battleEngine=self, miniatureId=miniId)
+        m=miniature(p,playerId,battleEngine=self, miniatureId=miniId, scale=self.scale,rangeDistance=self.shotRange)
         self.miniatures.append(m)
         self.scene.addItem(m)
         m.setPos(x,y)
