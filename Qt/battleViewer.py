@@ -43,7 +43,6 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         self.graphicsView.setScene(self.battleEngine.scene)
         self.graphicsView.show()
         self.battleEngine.messagePrinted.connect(self.logTextEdit.append)
-        self.battleEngine.pilotDestroyed.connect(self.pilotDestroyed)
         self.battleEngine.addBorders('maxresdefault')
         #for i in range(0, 100):
         #    self.newDataSourceItem(0, i*10)
@@ -56,9 +55,9 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         self.newGame()
         self.addBasicSet()
     
-    def pilotDestroyed(self,pilotId):
-        item=self.getPilotShipItem(pilotId)
-        self.scene.removeItem(item)
+    #def pilotDestroyed(self,pilotId):
+    #    item=self.getPilotShipItem(pilotId)
+    #    self.scene.removeItem(item)
         
         
     def addShip(self, x, y, trigAngle, name="novo", playerId=0):

@@ -125,7 +125,7 @@ class miniature(QtGui.QGraphicsRectItem):
             #self.parent.moveShip(,self)
         if action in self.mainWeaponAttackActions:
             miniId=int(str(action.text()).split(":")[0])
-            targetMiniature=self.battleEngine.miniatures[miniId]
+            targetMiniature=self.battleEngine.getMiniatureById(miniId)
             self.battleEngine.basicAttack(self,targetMiniature)
             #qDebug("User clicked attack")
         if action == self.focusAction: 

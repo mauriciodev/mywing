@@ -56,7 +56,12 @@ class BattleEngine(QObject):
             result=random.randint(0,7)
             rollResult[self.attackResults[result]]+=1
         return rollResult
-        
+    
+    def getMiniatureById(self,miniId):
+        for mini in self.miniatures:
+            if mini.miniatureId==miniId:
+                return mini
+    
     def rollDefenseDices(self,n):
         rollResult={'evade':0,'focus':0,'nothing':0}
         #3 evade 2 focus 3 nothing
@@ -67,8 +72,9 @@ class BattleEngine(QObject):
     
     def pilotKilled(self, mini):
         self.pilotDestroyed.emit(mini.miniatureId)
-        self.miniatures.pop(mini.miniatureId)
+        self.miniatures.pop(self.miniatures.index(mini))
         self.printMessage("Pilot %s was destroyed." % mini.pilot.name)
+        self.scene.removeItem(mini)
         self.pilotDestroyed.emit(mini.miniatureId)
     
         
