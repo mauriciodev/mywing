@@ -83,17 +83,17 @@ class BattleEngine(QObject):
         #later on this should be replaced by a well timed sequence
         #i'm ignoring focus right now
         #self.printMessage('')
-        distance=m1.range(m2)
+        attackRange=m1.range(m2)
         bearing=m1.bearing(m2)
-        self.printMessage(m1.pilot.name, "attacked from range %i" % distance, "and bearing %i."% bearing)
+        self.printMessage(m1.pilot.name, "attacked from range %i" % attackRange, "and bearing %i."% bearing)
         attackDices=m1.pilot.attack
         defenseDices=m2.pilot.defense
-        if (distance > 0) and (distance <=1*self.shotRange):
+        if (attackRange > 0) and (attackRange <=1):
             attackDices+=1
-        if (distance > 2*self.shotRange) and (distance <=3*self.shotRange):
+        if (attackRange > 2) and (attackRange <=3):
             defenseDices+=1
-        if distance > 3*self.shotRange:
-            self.printMessage("Out of range. Distance:",distance)
+        if attackRange > 3:
+            self.printMessage("Out of range. Distance:",attackRange)
             return
         if (bearing<m1.pilot.attackAngle[0]) or (bearing>m1.pilot.attackAngle[1]):
             self.printMessage("Enemy out of attack angle.")
