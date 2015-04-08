@@ -4,6 +4,7 @@ from PyQt4 import QtCore
 import math, os
 from pilot import pilot
 from pilotCard import pilotCard
+from copy import deepcopy
 
 
 """This class represents both the Miniature and everything that you can do with a miniature""" 
@@ -16,7 +17,7 @@ class miniature(QtGui.QGraphicsRectItem):
         #QGraphicsRectItem.__init__(self, 0, 0, 100, 50)
         self.height=height*scale
         self.width=width*scale
-        self.pilot=pilot
+        self.pilot=deepcopy(pilot)
         self.playerId=playerId
         #drawing the base
         super(miniature,self).__init__(0,0,self.width,self.height)
@@ -91,9 +92,9 @@ class miniature(QtGui.QGraphicsRectItem):
         #self.pilotData[-1].moveBy(self.width-5*self.scale, self.height-5*self.scale)
     
     def setMiniatureShield(self,value):
-        self.pilotData[2].setText(str(value))
+        self.pilotData[2].setPlainText(str(value))
     def setMiniatureHealth(self,value):
-        self.pilotData[3].setText(str(value))
+        self.pilotData[3].setPlainText(str(value))
     
     def getSize(self):
         #this is useless. I may be ditching this soon.
@@ -237,3 +238,8 @@ class miniature(QtGui.QGraphicsRectItem):
     
     def scalarProduct(self,v1,v2):
         return v1.x()*v2.x()+v1.y()*v2.y()
+    
+    def takeDamage(self,n):
+        self.pilot.takeDamage(n)
+        self.setMiniatureHealth(self.pilot.health)
+        self.setMiniatureShield(self.pilot.shield)

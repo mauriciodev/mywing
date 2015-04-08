@@ -116,7 +116,7 @@ class BattleEngine(QObject):
         damage=attackResults['attack']+attackResults['critical']
         self.printMessage(m2.pilot.name, "took",attackResults['attack'],"regular hits and", attackResults['critical'], "critical hits.")
         if damage>0: 
-            m2.pilot.takeDamage(damage)
+            m2.takeDamage(damage)
         self.printMessage(m2.pilot.name, "now has",m2.pilot.shield,"shield and",m2.pilot.health, "health")
         self.printMessage('') 
         self.checkPilot(m2)
