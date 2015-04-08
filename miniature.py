@@ -3,7 +3,10 @@ from PyQt4 import QtGui,  QtSvg
 from PyQt4 import QtCore 
 import math, os
 from pilot import pilot
+from pilotCard import pilotCard
 
+
+"""This class represents both the Miniature and everything that you can do with a miniature""" 
 class miniature(QtGui.QGraphicsRectItem):
     def __init__(self, pilot,  playerId, battleEngine=None, height=20,width=20, miniatureId=-1,scale=2.5,rangeDistance=2.5*40):
         self.scale=scale
@@ -16,16 +19,18 @@ class miniature(QtGui.QGraphicsRectItem):
         self.pilot=pilot
         self.playerId=playerId
         #drawing the base
-        QtGui.QGraphicsRectItem.__init__(self,0,0,self.width,self.height)
+        super(miniature,self).__init__(0,0,self.width,self.height)
+        #QtGui.QGraphicsRectItem.__init__(self,0,0,self.width,self.height)
         brush=QtGui.QBrush(QtGui.QColor(255,255,255,150))
         self.setBrush(brush)
         
         dirname, filename = os.path.split(os.path.abspath(__file__))
         imageFileName=os.path.join(dirname,"images",self.pilot.ship.name+".png")
-        pixmap=QtGui.QPixmap(imageFileName)
-        pixmap=pixmap.scaled(self.height,self.width);
-        self.shipImage=QtGui.QGraphicsPixmapItem(pixmap,parent=self)#0, 0, width, height)
-        self.shipImage.setZValue(1)
+        if os.path.exists(imageFileName):
+            pixmap=QtGui.QPixmap(imageFileName)
+            pixmap=pixmap.scaled(self.height,self.width);
+            self.shipImage=QtGui.QGraphicsPixmapItem(pixmap,parent=self)#0, 0, width, height)
+            self.shipImage.setZValue(1)
         
         #self.separator1=QtGui.QGraphicsLineItem( 6, 17, width-6, 17, self )
         #self.sidebar1=QtGui.QGraphicsLineItem( 6, 0, 6, height, self )
@@ -36,7 +41,7 @@ class miniature(QtGui.QGraphicsRectItem):
         self.textStyleSheet="QLabel { background-color : red; color : blue; }"
         #self.rotate(math.degrees(trigAngle))
         #self.moveBy(x, y)
-        self.setTitle(str(self.miniatureId)+": "+self.pilot.name)
+        self.setTitle(self.getMiniatureName())
         
         #self.setPosFromBattleEngine(self.pilot.position)
         self.makePopupMenu() #creates a menu for that pilot
@@ -65,11 +70,13 @@ class miniature(QtGui.QGraphicsRectItem):
         self.pilotData=[]
         #attack
         attributes=[self.pilot.attack,self.pilot.defense,self.pilot.shield,self.pilot.health]
+        colors=[QtGui.QColor(255,0,0),QtGui.QColor(0,255,0),QtGui.QColor(100,100,255), QtGui.QColor(255,255,0)]
         font=QtGui.QFont()
         font.setBold(True)
-        for at in attributes:
+        for color,at in zip(colors,attributes):
             self.pilotData.append(QtGui.QGraphicsTextItem(str(at), parent=self))
             self.pilotData[-1].setFont(font)
+            self.pilotData[-1].setDefaultTextColor(color)
             self.pilotData[-1].setPos(textXpos,textYpos)
             textXpos+=textXstep
             self.pilotData[-1].setZValue(2)
@@ -82,7 +89,12 @@ class miniature(QtGui.QGraphicsRectItem):
         #self.pilotData.append(QtGui.QGraphicsTextItem(str(self.pilot.skillLevel), parent=self))
         #self.pilotData[-1].setDefaultTextColor(QtGui.QColor(1,1,0))
         #self.pilotData[-1].moveBy(self.width-5*self.scale, self.height-5*self.scale)
-        
+    
+    def setMiniatureShield(self,value):
+        self.pilotData[2].setText(str(value))
+    def setMiniatureHealth(self,value):
+        self.pilotData[3].setText(str(value))
+    
     def getSize(self):
         #this is useless. I may be ditching this soon.
         x=self.pixelsPerCentimeters*self.width
@@ -128,12 +140,20 @@ class miniature(QtGui.QGraphicsRectItem):
             targetMiniature=self.battleEngine.getMiniatureById(miniId)
             self.battleEngine.basicAttack(self,targetMiniature)
             #qDebug("User clicked attack")
-        if action == self.focusAction: 
+        if action == self.actionFocus: 
             self.battleEngine.printMessage("User clicked Perform action")
-            
+        if action == self.actionPilotCard:
+            self.battleEngine.pilotClicked.emit(self.pilot.id)
+
+    
+    def getMiniatureName(self):
+        return str(self.miniatureId)+': '+self.pilot.name
+    
     def makePopupMenu(self):
         self.menu=QtGui.QMenu()
         self.menu.addAction("Player "+str(self.playerId))
+        self.menu.addSeparator()
+        self.actionPilotCard=self.menu.addAction(self.getMiniatureName())
         self.menu.addSeparator()
         #move=menu.addAction("Move");
         moveMenu=QtGui.QMenu(self.menu)
@@ -167,7 +187,7 @@ class miniature(QtGui.QGraphicsRectItem):
         actionMenu=QtGui.QMenu(self.menu)
         actionMenu.setTitle("&Perform action")
         self.menu.addMenu(actionMenu)
-        self.focusAction=actionMenu.addAction("Focus");
+        self.actionFocus=actionMenu.addAction("Focus");
         #performAction=menu.addAction("Perform Action");
         #attack=menu.addAction("Attack");
     def makeMainWeaponMenu(self):
@@ -176,7 +196,7 @@ class miniature(QtGui.QGraphicsRectItem):
         
         for mini in self.battleEngine.miniatures:
             if (mini.playerId!=self.playerId):
-                mainWeaponAction=self.mainWeaponMenu.addAction(str(mini.miniatureId)+": "+mini.pilot.name);
+                mainWeaponAction=self.mainWeaponMenu.addAction(mini.getMiniatureName());
                 self.mainWeaponAttackActions.append(mainWeaponAction)
                 
     def distance(self,mini):

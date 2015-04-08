@@ -10,7 +10,11 @@ class PilotFactory:
         self.parent=parent
         self.pilotLibrary = {}
         self.readPilots()
+
+    def getPilotById(self,pilotId):
+        return self.pilotLibrary[pilotId]
         
+    
     def printMessage(self, message):
         if (self.parent!=None) and ('printMessage' in dir(self.parent)):
             self.parent.printMessage(message)

@@ -7,9 +7,9 @@ from PyQt4.QtCore import QObject, pyqtSignal, QString
 from pilotFactory import PilotFactory
 from miniature import miniature
 from PyQt4 import QtGui,  QtSvg, QtCore
-from PyQt4.QtCore import *
+from turnSequencer import turnSequencer
 
-class defaultPrinter(QObject):
+class defaultPrinter(QtCore.QObject):
     def __init__(self,battleEngine):
         super(defaultPrinter,self).__init__()
         battleEngine.messagePrinted.connect(self.printMessage)
@@ -20,6 +20,7 @@ class defaultPrinter(QObject):
         self.printMessage("Pilot %i was destroyed." % pilotId)
 
 class BattleEngine(QObject):
+    pilotClicked=QtCore.pyqtSignal('int')
     messagePrinted=pyqtSignal('QString')
     pilotDestroyed=pyqtSignal('int')
     def __init__(self,scale=2.5,shotRange=4*2.5,bounds=[-450,-450,450,450]):
@@ -180,7 +181,7 @@ if __name__=="__main__":
     test=BattleEngine()
     p=defaultPrinter(test)
     #test.readPilots()
-    m1=test.addPilotByNameAndCoords("Master Mauricio", 0, 0, 0,1)
+    m1=test.addPilotByNameAndCoords("Master Mauricio", 0, 0, 180,1)
     m2=test.addPilotByNameAndCoords("General Leonardo", 0, 10, 0,2)
     #print test.pilots[0].isComplete()
     while len(test.miniatures)>1:

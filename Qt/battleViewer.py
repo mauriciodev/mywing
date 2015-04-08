@@ -11,18 +11,20 @@ from battleViewerDialog import Ui_battleViewerDialog
 from addPilot import addPilot
 from PyQt4 import QtGui,  QtSvg, QtCore
 from attackAreaItem import attackAreaItem 
+from pilotCard import pilotCard
 
 class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
     def __init__(self, parent=None,scale=2.5,range=40*2.5):
         QtGui.QMainWindow.__init__(self, parent)
         Ui_battleViewerDialog.__init__(self, parent)
         self.setupUi(self)
+        self.pilotCardWindow=pilotCard(self)
         self.scale=scale
         self.range=range*scale
         #self.connect(self.ui.actionExport, QtCore.SIGNAL('triggered()'), QtCore.SLOT('saveToSvg()'))
         self.newGame()
         self.addBasicSet()
-
+        self.battleEngine.pilotClicked.connect(self.showPilotCard)
         
         #self.graphicsView.scale(5,5)
         #scale of centimeters to pixels
@@ -37,6 +39,10 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         else:
             self.attackArea.show()
             self.actionRange_ruler.setChecked(True)
+    
+    def showPilotCard(self,pilotId):
+        p=self.battleEngine.pilotFactory.getPilotById(pilotId)
+        self.pilotCardWindow.showPilotData(p)
         
     def newGame(self):
         self.battleEngine=BattleEngine(self.scale,self.range)
@@ -61,9 +67,9 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         
         
     def addShip(self, x, y, trigAngle, name="novo", playerId=0):
-        pilot=self.battleEngine.addPilotByNameAndCoords(name,x,y,trigAngle,playerId)
-        #self.scene.addItem(shipItem(pilot.battleId,parent=self))
+        mini=self.battleEngine.addPilotByNameAndCoords(name,x,y,trigAngle,playerId)
         
+                
     def fileSave(self):
         print("save")
     
