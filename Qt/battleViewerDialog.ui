@@ -75,6 +75,7 @@
     <addaction name="actionScenarios"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_basic_set"/>
+    <addaction name="actionAdd_pilot"/>
    </widget>
    <widget class="QMenu" name="menuShow_range">
     <property name="title">
@@ -176,6 +177,11 @@
   <action name="actionNew_empty_game">
    <property name="text">
     <string>New empty game</string>
+   </property>
+  </action>
+  <action name="actionAdd_pilot">
+   <property name="text">
+    <string>Add pilot</string>
    </property>
   </action>
  </widget>
@@ -289,6 +295,22 @@
    <signal>triggered()</signal>
    <receiver>battleViewerDialog</receiver>
    <slot>newGame()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAdd_pilot</sender>
+   <signal>triggered()</signal>
+   <receiver>battleViewerDialog</receiver>
+   <slot>addPilot()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

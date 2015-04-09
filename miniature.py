@@ -3,7 +3,7 @@ from PyQt4 import QtGui,  QtSvg
 from PyQt4 import QtCore 
 import math, os
 from pilot import pilot
-from pilotCard import pilotCard
+from Qt.pilotCard import pilotCard
 from copy import deepcopy
 
 
@@ -19,6 +19,7 @@ class miniature(QtGui.QGraphicsRectItem):
         self.width=width*scale
         self.pilot=deepcopy(pilot)
         self.playerId=playerId
+        self.stressTokens=0
         self.activeGameActions=[]
         #drawing the base
         super(miniature,self).__init__(0,0,self.width,self.height)
@@ -124,7 +125,16 @@ class miniature(QtGui.QGraphicsRectItem):
     def move(self,move):
         #print self.getPos()
         move.performMove(self)
+        cost=self.getMoveCost(move)
+        if cost==2:
+            self.stressTokens+=1
+        if cost==0:
+            if self.stressTokens>0:
+                self.stressTokens-=1
         #print self.getPos()
+    
+    def getMoveCost(self,move):
+        return self.pilot.getMoveCost(move.name)
     
     def contextMenuEvent(self,event): #QGraphicsSceneContextMenuEvent *
         self.makeMainWeaponMenu()
@@ -153,7 +163,7 @@ class miniature(QtGui.QGraphicsRectItem):
     
     def makePopupMenu(self):
         self.menu=QtGui.QMenu()
-        self.menu.addAction("Player "+str(self.playerId))
+        self.menu.addAction(self.battleEngine.getPlayerName(self.playerId))
         self.menu.addSeparator()
         self.actionPilotCard=self.menu.addAction(self.getMiniatureName())
         self.menu.addSeparator()
@@ -163,7 +173,7 @@ class miniature(QtGui.QGraphicsRectItem):
         self.menu.addMenu(moveMenu)
         self.moveActions=[]
         for move in self.pilot.moves:
-            cost=self.pilot.getMoveCost(move.name)
+            cost=self.getMoveCost(move)
             moveAction=QtGui.QWidgetAction(moveMenu)
             moveAction.setText(move.name)
             

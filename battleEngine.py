@@ -23,7 +23,7 @@ class BattleEngine(QObject):
     pilotClicked=QtCore.pyqtSignal('int')
     messagePrinted=pyqtSignal('QString')
     pilotDestroyed=pyqtSignal('int')
-    def __init__(self,scale=2.5,shotRange=4*2.5,bounds=[-450,-450,450,450]):
+    def __init__(self,scale=2.5,shotRange=40*2.5,bounds=[-450,-450,450,450]):
         super(BattleEngine,self).__init__()
         self.shotRange=shotRange #number of unscaled units that remains inside range 1
         self.scale=scale
@@ -120,7 +120,22 @@ class BattleEngine(QObject):
         self.printMessage(m2.pilot.name, "now has",m2.pilot.shield,"shield and",m2.pilot.health, "health")
         self.printMessage('') 
         self.checkPilot(m2)
-            
+    
+    def getPlayerName(self,playerId):
+        return self.players[playerId]
+    
+    def getPlayerList(self):
+        res=[]
+        for player in self.players.values():
+            res.append(player)
+        return res
+    
+    def getPlayerStartAngle(self,playerId):
+        startAngles=[-90,90,0,180]
+        startPos=[(-450,0),(450,0),(0,-450),(0,450)]
+        index=self.players.keys().index(playerId)
+        return (startAngles[index],startPos[index])
+    
     def checkPilot(self,mini):
         if mini.pilot.health<1:
             self.pilotKilled(mini)
@@ -140,7 +155,11 @@ class BattleEngine(QObject):
         self.backgroundPixmap.setZValue(-1)
 
         
-    def addPilotByNameAndCoords(self,name, x, y, trigAngle,playerId):
+    def addPilotByNameAndCoords(self,name, playerId,x=0,y=0,angle=0):
+        if (x==0 and y==0 and angle ==0):
+            angle,pos=self.getPlayerStartAngle(playerId)
+            x=pos[0]
+            y=pos[1]
         p=self.pilotFactory.getPilotByName(name)
         if p==None:
             return p
@@ -151,7 +170,7 @@ class BattleEngine(QObject):
         self.miniatures.append(m)
         self.scene.addItem(m)
         m.setPos(x,y)
-        m.doRotate(trigAngle)
+        m.doRotate(angle)
         return m
     
     def getMiniatureByName(self,name):
@@ -180,14 +199,18 @@ if __name__=="__main__":
     app = QtGui.QApplication(sys.argv)
     test=BattleEngine()
     p=defaultPrinter(test)
+    test.addPlayer("Mauricio")
+    test.addPlayer("Leonardo")
     #test.readPilots()
-    m1=test.addPilotByNameAndCoords("Master Mauricio", 0, 0, 180,1)
-    m2=test.addPilotByNameAndCoords("General Leonardo", 0, 10, 0,2)
+    m1=test.addPilotByNameAndCoords("Master Mauricio", 1)
+    
+    m2=test.addPilotByNameAndCoords("General Leonardo", 2)
     #print test.pilots[0].isComplete()
     while len(test.miniatures)>1:
+        m1.move(m1.pilot.moves[0])
         test.basicAttack(m1,m2)
     #print test.pilots[1].health,test.pilots[1].shield 
-    m1.move(m1.pilot.moves[1])
+    #m1.move(m1.moves[1])
     #for move in test.pilots[0].moves:
     #    print move.name
     #print test.rollAttackDices(10)

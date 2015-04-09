@@ -26,10 +26,10 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         self.scale=scale
         self.range=range*scale
         #self.connect(self.ui.actionExport, QtCore.SIGNAL('triggered()'), QtCore.SLOT('saveToSvg()'))
+
         self.newGame()
         self.addBasicSet()
         self.battleEngine.pilotClicked.connect(self.showPilotCard)
-        self.graphicsView.installEventFilter(self)
         #self.graphicsView.scale(5,5)
         #scale of centimeters to pixels
         
@@ -48,8 +48,10 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         p=self.battleEngine.pilotFactory.getPilotById(pilotId)
         self.pilotCardWindow.showPilotData(p)
         
-    def newGame(self):
+    def newGame(self,players=["My Player 1","My Player 2"]):
         self.battleEngine=BattleEngine(self.scale,self.range)
+        for player in players:
+            self.battleEngine.addPlayer(player)
         self.graphicsView.setScene(self.battleEngine.scene)
         self.graphicsView.show()
         self.battleEngine.messagePrinted.connect(self.logTextEdit.append)
@@ -70,8 +72,8 @@ class BattleViewer(QtGui.QMainWindow, formClass):
     #    self.scene.removeItem(item)
         
         
-    def addShip(self, x, y, trigAngle, name="novo", playerId=0):
-        mini=self.battleEngine.addPilotByNameAndCoords(name,x,y,trigAngle,playerId)
+    def addShip(self, name="novo", playerId=0,x=0,y=0,angle=0):
+        mini=self.battleEngine.addPilotByNameAndCoords(name,playerId,x,y,angle)
         
                 
     def fileSave(self):
@@ -90,10 +92,10 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         else:
             print "Folder does not exist"
     def addBasicSet(self):
-        self.addShip(self.toPixels(-100),self.toPixels(0), -90, "General Leonardo",1)
+        self.addShip("General Leonardo",1,x=-250,y=0,angle=-90)
         #self.addShip(self.toPixels(-45),self.toPixels(10), -1*math.pi/2, "Master Mauricio",1)
-        self.addShip(self.toPixels(100), self.toPixels(20), 90, "Darth Philipe",2)
-        self.addShip(self.toPixels(100), self.toPixels(-20),90, "Emperor Luiz Claudius",2)
+        self.addShip("Darth Philipe",2,x=250,y=-50,angle=90)
+        self.addShip("Emperor Luiz Claudius",2,x=250,y=50,angle=90)
     
     def toPixels(self,cm):
         return self.scale*cm
@@ -121,11 +123,11 @@ class BattleViewer(QtGui.QMainWindow, formClass):
     def performAction(self):
         pass
     def addPilot(self):
-        window=addPilot()
+        window=addPilot(pilotFactory=self.battleEngine.pilotFactory,players=self.battleEngine.players,parent=self)
         window.show()
     def printMessage(self,message):
         self.logTextEdit.append(tr(message))
-        
+    
 
 
 if __name__ == "__main__":
