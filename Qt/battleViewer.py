@@ -5,7 +5,6 @@ import math
 dirname, filename = os.path.split(os.path.abspath(__file__))
 sys.path.append(os.path.split(dirname)[0])
 from battleEngine import BattleEngine
-from battleViewerDialog import Ui_battleViewerDialog
 #from shipItem import shipItem
 
 from addPilot import addPilot
