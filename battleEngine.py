@@ -8,6 +8,7 @@ from pilotFactory import PilotFactory
 from miniature import miniature
 from PyQt4 import QtGui,  QtSvg, QtCore
 from turnSequencer import turnSequencer
+from Qt.tokenFactory import TokenFactory
 
 class defaultPrinter(QtCore.QObject):
     def __init__(self,battleEngine):
@@ -42,6 +43,7 @@ class BattleEngine(QObject):
         self.bounds=bounds
         self.pilotFactory=PilotFactory(self,self.scale)
         self.scene=QtGui.QGraphicsScene()
+        self.tokenFactory=TokenFactory(self.scene)
     
     def addPlayer(self,name):
         playerId=len(self.players.keys())+1

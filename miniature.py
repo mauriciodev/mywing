@@ -66,7 +66,16 @@ class miniature(QtGui.QGraphicsRectItem):
         
     def getCenter(self):
         return QtCore.QPointF(self.boundingRect().width()/2, self.boundingRect().height()/2)
+    
+    def addStressToken(self):
+        self.stressToken=self.battleEngine.tokenFactory.newToken(self, "Stress",-20,40)
+        self.stressTokens+=1
         
+    def remStressToken(self):
+        self.battleEngine.scene.removeItem(self.stressToken)
+        if (self.stressTokens>0):
+            self.stressTokens-=1
+    
     def addPilotData(self):
         textYpos=self.height/2
         textXstep=12
@@ -131,10 +140,10 @@ class miniature(QtGui.QGraphicsRectItem):
         move.performMove(self)
         cost=self.getMoveCost(move)
         if cost==2:
-            self.stressTokens+=1
+            self.addStressToken()
         if cost==0:
             if self.stressTokens>0:
-                self.stressTokens-=1
+                self.remStressToken()
         self.nextMove=None
         #print self.getPos()
     
