@@ -189,7 +189,7 @@
   <customwidget>
    <class>ScenarioView</class>
    <extends>QGraphicsView</extends>
-   <header>scenarioView.h</header>
+   <header>Qt/scenarioView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

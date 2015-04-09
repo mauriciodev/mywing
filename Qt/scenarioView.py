@@ -7,7 +7,6 @@ class ScenarioView(QtGui.QGraphicsView):
     def wheelEvent(self,event):
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         #// Scale the view / do the zoom
-        print "wheel"
         scaleFactor = 1.15
         if(event.delta() > 0):
             # Zoom in

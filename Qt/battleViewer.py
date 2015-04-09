@@ -3,14 +3,14 @@ import sys, os
 import math
 
 dirname, filename = os.path.split(os.path.abspath(__file__))
-sys.path.append(os.path.split(dirname)[0])
+
 from battleEngine import BattleEngine
 #from shipItem import shipItem
 
-from addPilot import addPilot
+from Qt.addPilot import addPilot
 from PyQt4 import QtGui,  QtSvg, QtCore, uic
-from attackAreaItem import attackAreaItem 
-from pilotCard import pilotCard
+from Qt.attackAreaItem import attackAreaItem 
+from Qt.pilotCard import pilotCard
 
 
 formClass, baseClass = uic.loadUiType(os.path.join(dirname, "battleViewerDialog.ui"))

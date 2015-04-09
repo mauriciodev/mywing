@@ -1,3 +1,3 @@
 #!/bin/bash
-python Qt/battleViewer.py
+python myWing.py
 
