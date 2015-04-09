@@ -19,6 +19,7 @@ class miniature(QtGui.QGraphicsRectItem):
         self.width=width*scale
         self.pilot=deepcopy(pilot)
         self.playerId=playerId
+        self.activeGameActions=[]
         #drawing the base
         super(miniature,self).__init__(0,0,self.width,self.height)
         #QtGui.QGraphicsRectItem.__init__(self,0,0,self.width,self.height)

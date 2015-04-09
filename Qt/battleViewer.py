@@ -9,14 +9,19 @@ from battleViewerDialog import Ui_battleViewerDialog
 #from shipItem import shipItem
 
 from addPilot import addPilot
-from PyQt4 import QtGui,  QtSvg, QtCore
+from PyQt4 import QtGui,  QtSvg, QtCore, uic
 from attackAreaItem import attackAreaItem 
 from pilotCard import pilotCard
 
-class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
+
+formClass, baseClass = uic.loadUiType(os.path.join(dirname, "battleViewerDialog.ui"))
+
+
+class BattleViewer(QtGui.QMainWindow, formClass):
     def __init__(self, parent=None,scale=2.5,range=40*2.5):
-        QtGui.QMainWindow.__init__(self, parent)
-        Ui_battleViewerDialog.__init__(self, parent)
+        super(BattleViewer,self).__init__(parent)
+        #QtGui.QMainWindow.__init__(self, parent)
+        #Ui_battleViewerDialog.__init__(self, parent)
         self.setupUi(self)
         self.pilotCardWindow=pilotCard(self)
         self.scale=scale
@@ -25,7 +30,7 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         self.newGame()
         self.addBasicSet()
         self.battleEngine.pilotClicked.connect(self.showPilotCard)
-        
+        self.graphicsView.installEventFilter(self)
         #self.graphicsView.scale(5,5)
         #scale of centimeters to pixels
         
@@ -121,6 +126,8 @@ class BattleViewer(QtGui.QMainWindow, Ui_battleViewerDialog):
         window.show()
     def printMessage(self,message):
         self.logTextEdit.append(tr(message))
+        
+
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
