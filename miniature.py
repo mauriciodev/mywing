@@ -231,7 +231,7 @@ class miniature(QtGui.QGraphicsRectItem):
         if vDist.length()==0: return 0
         cosTheta=dot/vDist.length()
         bearing=math.acos(cosTheta)
-        cross=self.crossProdutc(vDist,self.getUnitVector())
+        cross=self.crossProduct(vDist,self.getUnitVector())
         if abs(cross)!=0.:
             sign=cross/abs(cross)
         else: sign=1.
