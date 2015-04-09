@@ -20,6 +20,7 @@ class miniature(QtGui.QGraphicsRectItem):
         self.pilot=deepcopy(pilot)
         self.playerId=playerId
         self.stressTokens=0
+        self.nextMove=None
         self.activeGameActions=[]
         #drawing the base
         super(miniature,self).__init__(0,0,self.width,self.height)
@@ -122,6 +123,9 @@ class miniature(QtGui.QGraphicsRectItem):
     def getPilot(self):
         return self.pilot
     
+    def chooseMove(self,move):
+        self.nextMove=move
+    
     def move(self,move):
         #print self.getPos()
         move.performMove(self)
@@ -131,6 +135,7 @@ class miniature(QtGui.QGraphicsRectItem):
         if cost==0:
             if self.stressTokens>0:
                 self.stressTokens-=1
+        self.nextMove=None
         #print self.getPos()
     
     def getMoveCost(self,move):
@@ -141,12 +146,15 @@ class miniature(QtGui.QGraphicsRectItem):
         action = self.menu.exec_(event.screenPos())
         if action in self.moveActions: 
             #qDebug("User clicked move")
-            self.battleEngine.printMessage("Player",self.playerId,"performed" ,action.text())
+            self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId),"chose",self.pilot.name+'\'s next move.')
             move=self.pilot.getMoveByName(action.text())
-            self.move(move)
+            self.chooseMove(move)
             #newPos=self.battleEngine.performMove(self,move)
             #self.setPosFromBattleEngine(newPos)
             #self.parent.moveShip(,self)
+        if action ==self.actionPerformMove:
+            self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId),"performed" ,self.nextMove.name)
+            self.move(self.nextMove)
         if action in self.mainWeaponAttackActions:
             miniId=int(str(action.text()).split(":")[0])
             targetMiniature=self.battleEngine.getMiniatureById(miniId)
@@ -188,6 +196,7 @@ class miniature(QtGui.QGraphicsRectItem):
                 moveAction.setFont(font)
             moveMenu.addAction(moveAction)
             self.moveActions.append(moveAction)
+        self.actionPerformMove=self.menu.addAction("Perform move")
         
         attackMenu=QtGui.QMenu(self.menu)
         attackMenu.setTitle("&Attack")
@@ -244,7 +253,7 @@ class miniature(QtGui.QGraphicsRectItem):
         angle=math.radians(self.rot+90)
         return QtGui.QVector2D(math.cos(angle),-1*math.sin(angle))
         
-    def crossProdutc(self,v1,v2):
+    def crossProduct(self,v1,v2):
         return v1.x()*v2.y()-v1.y()*v2.x()
     
     def scalarProduct(self,v1,v2):
