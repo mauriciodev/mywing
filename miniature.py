@@ -5,7 +5,16 @@ import math, os
 from pilot import pilot
 from Qt.pilotCard import pilotCard
 from copy import deepcopy
+from Qt.tokenFactory import Token
 
+import sys
+
+if getattr(sys, 'frozen', False):
+    # we are running in a |PyInstaller| bundle
+    basedir = sys._MEIPASS
+else:
+    # we are running in a normal Python environment
+    basedir = os.path.dirname(__file__)
 
 """This class represents both the Miniature and everything that you can do with a miniature""" 
 class miniature(QtGui.QGraphicsRectItem):
@@ -21,15 +30,14 @@ class miniature(QtGui.QGraphicsRectItem):
         self.playerId=playerId
         self.stressTokens=0
         self.nextMove=None
-        self.activeGameActions=[]
+        self.tokens=[]
         #drawing the base
         super(miniature,self).__init__(0,0,self.width,self.height)
         #QtGui.QGraphicsRectItem.__init__(self,0,0,self.width,self.height)
         brush=QtGui.QBrush(QtGui.QColor(255,255,255,150))
         self.setBrush(brush)
         
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        imageFileName=os.path.join(dirname,"images",self.pilot.ship.name+".png")
+        imageFileName=os.path.join(basedir,"images",self.pilot.ship.name+".png")
         if os.path.exists(imageFileName):
             pixmap=QtGui.QPixmap(imageFileName)
             pixmap=pixmap.scaled(self.height,self.width);
@@ -131,10 +139,9 @@ class miniature(QtGui.QGraphicsRectItem):
         move.performMove(self)
         cost=self.getMoveCost(move)
         if cost==2:
-            self.stressTokens+=1
+            self.addStressToken()
         if cost==0:
-            if self.stressTokens>0:
-                self.stressTokens-=1
+            self.remStressToken()
         self.nextMove=None
         #print self.getPos()
     
@@ -153,8 +160,11 @@ class miniature(QtGui.QGraphicsRectItem):
             #self.setPosFromBattleEngine(newPos)
             #self.parent.moveShip(,self)
         if action ==self.actionPerformMove:
-            self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId),"performed" ,self.nextMove.name)
-            self.move(self.nextMove)
+            if self.nextMove==None:
+                self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId), " didn't choose a move for this unit.")
+            else:
+                self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId),"performed" ,self.nextMove.name)
+                self.move(self.nextMove)
         if action in self.mainWeaponAttackActions:
             miniId=int(str(action.text()).split(":")[0])
             targetMiniature=self.battleEngine.getMiniatureById(miniId)
@@ -185,7 +195,6 @@ class miniature(QtGui.QGraphicsRectItem):
             moveAction=QtGui.QWidgetAction(moveMenu)
             moveAction.setText(move.name)
             
-            #moveAction=moveMenu.addAction(move.name)
             if cost==0:
                 font=moveAction.font()
                 font.setItalic(True)
@@ -219,7 +228,7 @@ class miniature(QtGui.QGraphicsRectItem):
             if (mini.playerId!=self.playerId):
                 mainWeaponAction=self.mainWeaponMenu.addAction(mini.getMiniatureName());
                 self.mainWeaponAttackActions.append(mainWeaponAction)
-                
+        
     def distance(self,mini):
         vDist=QtGui.QVector2D(self.pos()-mini.pos())
         return vDist.length()
@@ -263,3 +272,51 @@ class miniature(QtGui.QGraphicsRectItem):
         self.pilot.takeDamage(n)
         self.setMiniatureHealth(self.pilot.health)
         self.setMiniatureShield(self.pilot.shield)
+    
+    def getNextTokenPos(self):
+        tokenCount=len(self.tokens)
+        x=y=0
+        if tokenCount<=3:
+            x=-20
+            y=tokenCount*15
+        if tokenCount >3 and tokenCount<= 7:
+            y= 56
+            x=-20+tokenCount*15
+        if tokenCount > 7 :
+            x= 50
+            y=60-tokenCount*15
+        return (x,y)
+    
+    def addStressToken(self):
+        tokenPos=self.getNextTokenPos()
+        self.tokens.append(self.battleEngine.tokenFactory.newToken(self, "Stress",tokenPos[0],tokenPos[1]))
+        for move,moveAction in zip(self.pilot.moves,self.moveActions):
+            cost=self.getMoveCost(move)
+            if cost==2:
+                moveAction.setEnabled(False)
+    
+    def hasStressToken(self):
+        for token in self.tokens:
+            if token.getTokenType()=='Stress':
+                return token
+        return None
+    
+    
+    def remStressToken(self):
+        token=self.hasStressToken()
+        if token!=None:
+            self.removeToken(token.tokenId)
+            self.tokens.pop(self.tokens.index(token))
+        if self.hasStressToken()==None:
+            #activates the cost 2 moves
+            for move,moveAction in zip(self.pilot.moves,self.moveActions):
+                cost=self.getMoveCost(move)
+                if cost==2:
+                    moveAction.setEnabled(True)
+            
+    def removeToken(self,tokenId):
+        for item in self.childItems():
+            if type(item) is Token:
+                if item.tokenId==tokenId:
+                    self.battleEngine.scene.removeItem(item)
+                    return        

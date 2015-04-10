@@ -1,8 +1,14 @@
 
 import sys, os
 import math
+import sys
 
-dirname, filename = os.path.split(os.path.abspath(__file__))
+if getattr(sys, 'frozen', False):
+    # we are running in a |PyInstaller| bundle
+    basedir = sys._MEIPASS
+else:
+    # we are running in a normal Python environment
+    basedir = os.path.dirname(__file__)
 
 from battleEngine import BattleEngine
 #from shipItem import shipItem
@@ -13,7 +19,7 @@ from Qt.attackAreaItem import attackAreaItem
 from Qt.pilotCard import pilotCard
 
 
-formClass, baseClass = uic.loadUiType(os.path.join(dirname, "battleViewerDialog.ui"))
+formClass, baseClass = uic.loadUiType(os.path.join(basedir, "battleViewerDialog.ui"))
 
 
 class BattleViewer(QtGui.QMainWindow, formClass):

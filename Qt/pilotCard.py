@@ -6,11 +6,17 @@ from PyQt4 import QtGui,  QtSvg, QtCore, uic
 
 from pilot import pilot
 
+if getattr(sys, 'frozen', False):
+    # we are running in a |PyInstaller| bundle
+    basedir = sys._MEIPASS
+else:
+    # we are running in a normal Python environment
+    basedir = os.path.dirname(__file__)
+
 class pilotCard(QtGui.QDialog):
     def __init__(self, parent = None):
         super(pilotCard, self).__init__(parent)
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        uic.loadUi(os.path.join(dirname,'pilotCard.ui'), self)
+        uic.loadUi(os.path.join(basedir,'pilotCard.ui'), self)
         self.scene=QtGui.QGraphicsScene()
         self.graphicsView.setScene(self.scene)
         #self.miniature=mini
@@ -23,8 +29,7 @@ class pilotCard(QtGui.QDialog):
         self.shieldLabel.setText(str(pilot.shield))
         self.healthLabel.setText(str(pilot.health))
         #loading ship image
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        imageFileName=os.path.join(os.path.split(dirname)[0],"images",pilot.ship.name+".png")
+        imageFileName=os.path.join(os.path.split(basedir)[0],"images",pilot.ship.name+".png")
         #pixmap=QtGui.QPixmap(imageFileName)
         if os.path.exists(imageFileName):
             pixmap=QtGui.QPixmap(imageFileName)

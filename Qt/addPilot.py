@@ -3,11 +3,14 @@ from PyQt4 import QtGui,  QtSvg, QtCore, uic
 import sys, os
 import math
 
-dirname, filename = os.path.split(os.path.abspath(__file__))
-sys.path.append(os.path.split(dirname)[0])
+if getattr(sys, 'frozen', False):
+    # we are running in a |PyInstaller| bundle
+    basedir = sys._MEIPASS
+else:
+    # we are running in a normal Python environment
+    basedir = os.path.dirname(__file__)
 
-
-Ui_addPilotDialog, addPilotClass = uic.loadUiType(os.path.join(dirname, "addPilotDialog.ui"))
+Ui_addPilotDialog, addPilotClass = uic.loadUiType(os.path.join(basedir, "addPilotDialog.ui"))
 
 class addPilot(QtGui.QDialog, Ui_addPilotDialog):
     def __init__(self, pilotFactory, players, parent=None):
