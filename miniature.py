@@ -74,7 +74,16 @@ class miniature(QtGui.QGraphicsRectItem):
         
     def getCenter(self):
         return QtCore.QPointF(self.boundingRect().width()/2, self.boundingRect().height()/2)
+    
+    def addStressToken(self):
+        self.stressToken=self.battleEngine.tokenFactory.newToken(self, "Stress",-20,40)
+        self.stressTokens+=1
         
+    def remStressToken(self):
+        self.battleEngine.scene.removeItem(self.stressToken)
+        if (self.stressTokens>0):
+            self.stressTokens-=1
+    
     def addPilotData(self):
         textYpos=self.height/2
         textXstep=12

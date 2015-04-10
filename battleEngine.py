@@ -45,7 +45,6 @@ class BattleEngine(QObject):
         self.pilotFactory=PilotFactory(self,self.scale)
         self.scene=QtGui.QGraphicsScene()
         self.tokenFactory=TokenFactory(self.scene)
-
     
     def addPlayer(self,name):
         playerId=len(self.players.keys())+1
