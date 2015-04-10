@@ -6,12 +6,12 @@ if getattr(sys, 'frozen', False):
     basedir = sys._MEIPASS
 else:
     # we are running in a normal Python environment
-    basedir = os.path.dirname(__file__)
+    basedir = os.path.join(os.path.split(os.path.dirname(__file__))[0],'images')
 
 class TokenFactory(QtCore.QObject):
     def __init__(self,scene=None):
         self.scene=scene
-        self.tokenRenderer=QtSvg.QSvgRenderer(os.path.join(os.path.split(basedir)[0],'images','tokens.svg' ))
+        self.tokenRenderer=QtSvg.QSvgRenderer(os.path.join(basedir,'tokens.svg' ))
         self.tokenCount=0
     def newToken(self,parent,type,x=-20,y=0):
         if self.tokenRenderer.elementExists(type):

@@ -8,7 +8,7 @@ if getattr(sys, 'frozen', False):
     basedir = sys._MEIPASS
 else:
     # we are running in a normal Python environment
-    basedir = os.path.dirname(__file__)
+    basedir = os.path.join(os.path.dirname(__file__),'data')
 
 class PilotFactory:
     "This class should have a parent to report it's messages."
@@ -42,7 +42,7 @@ class PilotFactory:
         self.pilotLibrary = {}
         self.printMessage("Loading pilot data.")
         
-        with open(os.path.join(basedir, 'data','pilots.json')) as f:
+        with open(os.path.join(basedir,'pilots.json')) as f:
             for line in f:
                 p = pilot()
                 p.fromDict(json.loads(line))
@@ -55,20 +55,20 @@ class PilotFactory:
                 # print p.asDict()
     def readMoves(self):
         self.movesLibrary = {}
-        with open(os.path.join(basedir, 'data','moves.json')) as f:
+        with open(os.path.join(basedir, 'moves.json')) as f:
             for line in f:
                 m = move(scale=self.scale)
                 m.fromDict(json.loads(line))
                 self.movesLibrary[m.id] = m
     def readShips(self):
         self.shipsLibrary = {}
-        with open(os.path.join(basedir, 'data','ships.json')) as f:
+        with open(os.path.join(basedir, 'ships.json')) as f:
             for line in f:
                 s = ship()
                 s.fromDict(json.loads(line))
                 self.shipsLibrary[s.id] = s
     def savePilots(self):
-        pilotFile = open(os.path.join(basedir, 'data','pilots.json'), 'w')
+        pilotFile = open(os.path.join(basedir, 'pilots.json'), 'w')
         for pilot in self.pilotLibrary:
             pilotFile.write(json.dumps(pilot.asDict()))
         pilotFile.close() 

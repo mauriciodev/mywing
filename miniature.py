@@ -14,7 +14,7 @@ if getattr(sys, 'frozen', False):
     basedir = sys._MEIPASS
 else:
     # we are running in a normal Python environment
-    basedir = os.path.dirname(__file__)
+    basedir = os.path.join(os.path.dirname(__file__),'images')
 
 """This class represents both the Miniature and everything that you can do with a miniature""" 
 class miniature(QtGui.QGraphicsRectItem):
@@ -37,7 +37,7 @@ class miniature(QtGui.QGraphicsRectItem):
         brush=QtGui.QBrush(QtGui.QColor(255,255,255,150))
         self.setBrush(brush)
         
-        imageFileName=os.path.join(basedir,"images",self.pilot.ship.name+".png")
+        imageFileName=os.path.join(basedir,self.pilot.ship.name+".png")
         if os.path.exists(imageFileName):
             pixmap=QtGui.QPixmap(imageFileName)
             pixmap=pixmap.scaled(self.height,self.width);

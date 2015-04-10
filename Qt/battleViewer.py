@@ -17,7 +17,7 @@ from Qt.addPilot import addPilot
 from PyQt4 import QtGui,  QtSvg, QtCore, uic
 from Qt.attackAreaItem import attackAreaItem 
 from Qt.pilotCard import pilotCard
-
+import Qt.scenarioView
 
 formClass, baseClass = uic.loadUiType(os.path.join(basedir, "battleViewerDialog.ui"))
 

@@ -11,6 +11,13 @@ from turnSequencer import turnSequencer
 from Qt.tokenFactory import TokenFactory
 from Qt.tokenFactory import Token
 
+if getattr(sys, 'frozen', False):
+    # we are running in a |PyInstaller| bundle
+    basedir = sys._MEIPASS
+else:
+    # we are running in a normal Python environment
+    basedir = os.path.join(os.path.dirname(__file__),'images','scenarios')
+
 class defaultPrinter(QtCore.QObject):
     def __init__(self,battleEngine):
         super(defaultPrinter,self).__init__()
@@ -150,7 +157,7 @@ class BattleEngine(QObject):
         b=map(lambda x:x*self.scale,b)
         self.borders=self.scene.addRect(b[0],b[1],b[2]-b[0],b[3]-b[1])
         dirname, filename = os.path.split(os.path.abspath(__file__))
-        imageFileName=os.path.join(dirname,"images/scenarios",scenarioName+".jpg")
+        imageFileName=os.path.join(basedir,scenarioName+".jpg")
         pixmap=QtGui.QPixmap(imageFileName)
         pixmap=pixmap.scaled(b[2]-b[0],b[3]-b[1]);
         self.backgroundPixmap=self.scene.addPixmap(pixmap)
