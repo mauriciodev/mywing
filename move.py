@@ -25,15 +25,23 @@ class move:
         
     def standardMove(self,mini):
         v0=QtGui.QVector2D(mini.getPos())
+        #computing support vectors
         uVec=mini.getUnitVector()
         normalVec=self.rotateVector(uVec, -90)
-        v1=v0+uVec*self.dx+normalVec*self.dy
-        mini.setPos(v1.toPointF())
+        #First, we move the center of mass to the border of the unit's base. 
+        v1=v0+uVec*mini.height/2.
+        #then we perform the move
+        v2=v1+uVec*self.dx+normalVec*self.dy
+        #now we rotate the ship
         mini.doRotate(self.rotation)
-        print self.rotation
-        print mini.rotation()
-        print mini.rot
+        #and we get the new direction to move the center of mass back to it's place
+        uVec=mini.getUnitVector()
+        v3=v2+uVec*mini.height/2.
+        mini.setPos(v3.toPointF())
+        
         return mini.getPos()
+
+
         
     def rotateVector(self,vec,angle):
         angle=math.radians(angle)

@@ -14,9 +14,10 @@ class pilot:
         self.attackAngle=(-40,40) #bearing
         self.shipId=-1
         self.ship=None
-        self.maneuvers=[]
         self.improvements=[]
         self.cost=cost
+        self.availableActionsNames=[]
+        self.availableActions=[]
         self.resetHealth()
         
     def resetHealth(self):
@@ -61,7 +62,16 @@ class pilot:
         #self.=dict['improvements']
         self.shipId=dict['shipId']
         self.cost=dict['cost']
+        self.availableActionsNames=dict["actions"]
 
+    def hasAction(self,actionName):
+        result=False
+        for actionObj in self.availableActions:
+            if actionObj.name==actionName:
+                result=True
+        return result
+        #return actionName in self.availableActionsNames
+            
   
     def getMoveByName(self,name):
         for move in self.moves:

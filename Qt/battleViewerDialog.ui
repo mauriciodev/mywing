@@ -83,9 +83,19 @@
     </property>
     <addaction name="actionRange_ruler"/>
    </widget>
+   <widget class="QMenu" name="menuEnd_turn">
+    <property name="title">
+     <string>Turns</string>
+    </property>
+    <addaction name="actionPreparation_stage"/>
+    <addaction name="actionMove_stage"/>
+    <addaction name="actionAttack_stage"/>
+    <addaction name="actionEnd_turn"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuLibraries"/>
    <addaction name="menuShow_range"/>
+   <addaction name="menuEnd_turn"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget_2">
@@ -182,6 +192,26 @@
   <action name="actionAdd_pilot">
    <property name="text">
     <string>Add pilot</string>
+   </property>
+  </action>
+  <action name="actionEnd_turn">
+   <property name="text">
+    <string>End turn</string>
+   </property>
+  </action>
+  <action name="actionPreparation_stage">
+   <property name="text">
+    <string>Preparation stage</string>
+   </property>
+  </action>
+  <action name="actionMove_stage">
+   <property name="text">
+    <string>Move stage</string>
+   </property>
+  </action>
+  <action name="actionAttack_stage">
+   <property name="text">
+    <string>Attack stage</string>
    </property>
   </action>
  </widget>
@@ -322,6 +352,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionMove_stage</sender>
+   <signal>triggered()</signal>
+   <receiver>battleViewerDialog</receiver>
+   <slot>movementStage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPreparation_stage</sender>
+   <signal>triggered()</signal>
+   <receiver>battleViewerDialog</receiver>
+   <slot>preparationStage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAttack_stage</sender>
+   <signal>triggered()</signal>
+   <receiver>battleViewerDialog</receiver>
+   <slot>attackStage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionEnd_turn</sender>
+   <signal>triggered()</signal>
+   <receiver>battleViewerDialog</receiver>
+   <slot>endOfTurn()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>export()</slot>
@@ -332,5 +426,9 @@
   <slot>toggleShowRange()</slot>
   <slot>newGame()</slot>
   <slot>newBasicSetGame()</slot>
+  <slot>endOfTurn()</slot>
+  <slot>preparationStage()</slot>
+  <slot>attackStage()</slot>
+  <slot>movementStage()</slot>
  </slots>
 </ui>

@@ -2,6 +2,7 @@ import os, json, sys
 from pilot import pilot
 from ship import ship
 from move import move
+from actionFactory import ActionFactory
 
 if getattr(sys, 'frozen', False):
     # we are running in a |PyInstaller| bundle
@@ -16,6 +17,8 @@ class PilotFactory:
         self.scale=scale
         self.parent=parent
         self.pilotLibrary = {}
+        self.actionFactory=ActionFactory()
+
         self.readPilots()
 
     def getPilotById(self,pilotId):
@@ -50,7 +53,7 @@ class PilotFactory:
                 p.ship=self.getPilotShip(p)
                 p.moves=self.getPilotMoves(p)
                 self.pilotLibrary[p.id] = p
-                
+                self.readActions(p)
         
                 # print p.asDict()
     def readMoves(self):
@@ -72,6 +75,15 @@ class PilotFactory:
         for pilot in self.pilotLibrary:
             pilotFile.write(json.dumps(pilot.asDict()))
         pilotFile.close() 
+    
+    def readActions(self,pilot):
+        pilot.availableActions=[]
+        for actionName in pilot.availableActionsNames:
+            actionObj=self.actionFactory.getActionByName(actionName)
+            if actionObj != None:
+                pilot.availableActions.append(actionObj)
+            else:
+                print "Action not available: ", actionName, ". Pilot: ",pilot.name
     
     def getMoveById(self,moveId):
         return self.movesLibrary[moveId]

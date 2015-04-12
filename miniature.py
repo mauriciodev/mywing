@@ -8,6 +8,8 @@ from copy import deepcopy
 from Qt.tokenFactory import Token
 
 import sys
+from docutils.nodes import target
+
 
 if getattr(sys, 'frozen', False):
     # we are running in a |PyInstaller| bundle
@@ -18,7 +20,7 @@ else:
 
 """This class represents both the Miniature and everything that you can do with a miniature""" 
 class miniature(QtGui.QGraphicsRectItem):
-    def __init__(self, pilot,  playerId, battleEngine=None, height=20,width=20, miniatureId=-1,scale=2.5,rangeDistance=2.5*40):
+    def __init__(self, pilot,  playerId, battleEngine=None, height=40,width=40, miniatureId=-1,scale=2.5,rangeDistance=2.5*40):
         self.scale=scale
         self.rangeDistance=rangeDistance
         self.battleEngine=battleEngine
@@ -30,7 +32,7 @@ class miniature(QtGui.QGraphicsRectItem):
         self.playerId=playerId
         self.stressTokens=0
         self.nextMove=None
-        self.tokens=[]
+        self.tokens=[None]*9 #the token list has at most 9 tokens. 
         #drawing the base
         super(miniature,self).__init__(0,0,self.width,self.height)
         #QtGui.QGraphicsRectItem.__init__(self,0,0,self.width,self.height)
@@ -58,7 +60,11 @@ class miniature(QtGui.QGraphicsRectItem):
         #self.setPosFromBattleEngine(self.pilot.position)
         self.makePopupMenu() #creates a menu for that pilot
         self.addPilotData()
-        
+        self.actionEvade=None
+        self.actionEvade=None
+        self.actionBarrelRoll=None
+        self.endOfTurn()
+
     def doRotate(self,rotation):
         self.rot+=rotation
         transform = QtGui.QTransform()
@@ -74,15 +80,6 @@ class miniature(QtGui.QGraphicsRectItem):
         
     def getCenter(self):
         return QtCore.QPointF(self.boundingRect().width()/2, self.boundingRect().height()/2)
-    
-    def addStressToken(self):
-        self.stressToken=self.battleEngine.tokenFactory.newToken(self, "Stress",-20,40)
-        self.stressTokens+=1
-        
-    def remStressToken(self):
-        self.battleEngine.scene.removeItem(self.stressToken)
-        if (self.stressTokens>0):
-            self.stressTokens-=1
     
     def addPilotData(self):
         textYpos=self.height/2
@@ -153,36 +150,44 @@ class miniature(QtGui.QGraphicsRectItem):
             self.remStressToken()
         self.nextMove=None
         #print self.getPos()
+        
+    def barrelRoll(self):
+        self.battleEngine.printMessage("Barrel roll")
     
     def getMoveCost(self,move):
         return self.pilot.getMoveCost(move.name)
     
     def contextMenuEvent(self,event): #QGraphicsSceneContextMenuEvent *
         self.makeMainWeaponMenu()
+        self.makeTargetLockMenu()
         action = self.menu.exec_(event.screenPos())
-        if action in self.moveActions: 
-            #qDebug("User clicked move")
-            self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId),"chose",self.pilot.name+'\'s next move.')
-            move=self.pilot.getMoveByName(action.text())
-            self.chooseMove(move)
-            #newPos=self.battleEngine.performMove(self,move)
-            #self.setPosFromBattleEngine(newPos)
-            #self.parent.moveShip(,self)
-        if action ==self.actionPerformMove:
-            if self.nextMove==None:
-                self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId), " didn't choose a move for this unit.")
-            else:
-                self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId),"performed" ,self.nextMove.name)
-                self.move(self.nextMove)
-        if action in self.mainWeaponAttackActions:
-            miniId=int(str(action.text()).split(":")[0])
-            targetMiniature=self.battleEngine.getMiniatureById(miniId)
-            self.battleEngine.basicAttack(self,targetMiniature)
-            #qDebug("User clicked attack")
-        if action == self.actionFocus: 
-            self.battleEngine.printMessage("User clicked Perform action")
-        if action == self.actionPilotCard:
-            self.battleEngine.pilotClicked.emit(self.pilot.id)
+        if action != None:
+            if action in self.moveActions: 
+                #qDebug("User clicked move")
+                self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId),"chose",self.pilot.name+'\'s next move.')
+                move=self.pilot.getMoveByName(action.text())
+                self.chooseMove(move)
+                #newPos=self.battleEngine.performMove(self,move)
+                #self.setPosFromBattleEngine(newPos)
+                #self.parent.moveShip(,self)
+            if action ==self.actionPerformMove:
+                if self.nextMove==None:
+                    self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId), " didn't choose a move for this unit.")
+                else:
+                    self.battleEngine.printMessage(self.battleEngine.getPlayerName(self.playerId),"performed" ,self.nextMove.name)
+                    self.move(self.nextMove)
+            if action in self.mainWeaponAttackActions:
+                miniId=int(str(action.text()).split(":")[0])
+                targetMiniature=self.battleEngine.getMiniatureById(miniId)
+                self.battleEngine.basicAttack(self,targetMiniature)
+                #qDebug("User clicked attack")
+               
+            if action in self.targetLockActions:
+                miniId=int(str(action.text()).split(":")[0])
+                targetMiniature=self.battleEngine.getMiniatureById(miniId)
+                self.addTargetLockerToken(targetMiniature)
+            if action == self.actionPilotCard:
+                self.battleEngine.pilotClicked.emit(self.pilot.id)
 
     
     def getMiniatureName(self):
@@ -224,9 +229,23 @@ class miniature(QtGui.QGraphicsRectItem):
         attackMenu.addMenu(self.mainWeaponMenu)
         #self.actionsActions=[]
         actionMenu=QtGui.QMenu(self.menu)
+        
+        #Adding actions
+        self.availableActions={}
         actionMenu.setTitle("&Perform action")
         self.menu.addMenu(actionMenu)
-        self.actionFocus=actionMenu.addAction("Focus");
+        focusAction=actionMenu.addAction("Focus")
+        focusAction.triggered.connect(self.addFocusToken)
+        if self.pilot.hasAction("Evade"):
+            evadeAction=actionMenu.addAction("Evade")
+            evadeAction.triggered.connect(self.addEvadeToken)
+        if self.pilot.hasAction("Barrel roll"):
+            barrelRollAction=actionMenu.addAction("Barrel roll")
+            barrelRollAction.triggered.connect(self.performBarrelRoll)
+        if self.pilot.hasAction("Target Lock"):
+            self.menuTargetLock=QtGui.QMenu(actionMenu)
+            self.menuTargetLock.setTitle("Target Lock")
+            actionMenu.addMenu(self.menuTargetLock)
         #performAction=menu.addAction("Perform Action");
         #attack=menu.addAction("Attack");
     def makeMainWeaponMenu(self):
@@ -237,6 +256,19 @@ class miniature(QtGui.QGraphicsRectItem):
             if (mini.playerId!=self.playerId):
                 mainWeaponAction=self.mainWeaponMenu.addAction(mini.getMiniatureName());
                 self.mainWeaponAttackActions.append(mainWeaponAction)
+    
+        
+    
+    def makeTargetLockMenu(self):
+        #TO DO:Should check if player can target lock
+        self.targetLockActions=[]
+        if self.pilot.hasAction("Target Lock"):
+            self.menuTargetLock.clear()
+            
+            for mini in self.battleEngine.miniatures:
+                if (mini.playerId!=self.playerId):
+                    targetLockAction=self.menuTargetLock.addAction(mini.getMiniatureName())
+                    self.targetLockActions.append(targetLockAction)
         
     def distance(self,mini):
         vDist=QtGui.QVector2D(self.pos()-mini.pos())
@@ -283,49 +315,153 @@ class miniature(QtGui.QGraphicsRectItem):
         self.setMiniatureShield(self.pilot.shield)
     
     def getNextTokenPos(self):
-        tokenCount=len(self.tokens)
         x=y=0
-        if tokenCount<=3:
-            x=-20
-            y=tokenCount*15
-        if tokenCount >3 and tokenCount<= 7:
-            y= 56
-            x=-20+tokenCount*15
-        if tokenCount > 7 :
-            x= 50
-            y=60-tokenCount*15
+        nextTokenId=0
+        #looking for empty spaces
+        for i in range(0,len(self.tokens)):
+            if self.tokens[i]==None:
+                break #found an empty space
+        if i<9:
+            nextTokenId=i
+        else: 
+            print "More than 9 tokens were added."
+            return
+            
+        if nextTokenId<3:
+            x=-15*self.battleEngine.scale
+            y=nextTokenId*15*self.battleEngine.scale
+        if nextTokenId >=3 and nextTokenId< 6:
+            y= 40*self.battleEngine.scale
+            x=(-2(nextTokenId-3)*15)*self.battleEngine.scale
+        if nextTokenId >= 6 :
+            x= 40*self.battleEngine.scale
+            y=(30-(nextTokenId-6)*15)*self.battleEngine.scale
         return (x,y)
     
-    def addStressToken(self):
+    
+    
+    def _addToken(self,tokenType):
         tokenPos=self.getNextTokenPos()
-        self.tokens.append(self.battleEngine.tokenFactory.newToken(self, "Stress",tokenPos[0],tokenPos[1]))
+        for i in range(0,len(self.tokens)):
+            if self.tokens[i]==None:
+                break
+        if i>len(self.tokens):
+            print "More than 9 tokens were added."
+        else: 
+            self.tokens[i]=self.battleEngine.tokenFactory.newToken(self, tokenType,tokenPos[0],tokenPos[1])
+
+    
+    def addStressToken(self):
+        self._addToken("Stress")
         for move,moveAction in zip(self.pilot.moves,self.moveActions):
             cost=self.getMoveCost(move)
             if cost==2:
                 moveAction.setEnabled(False)
+    def addFocusToken(self):
+        self._addToken("Focus")
+        
+    def addEvadeToken(self):
+        self._addToken("Evade")
+        
+    def addTargetLockerToken(self,targetMiniature):
+        tokenPos=self.getNextTokenPos()
+        self.tokens.append(self.battleEngine.tokenFactory.newTargetLockerToken(self, tokenPos[0],tokenPos[1],targetMiniature.miniatureId))
+        targetMiniature.addTargetLockedToken(self)
+        
+    def addTargetLockedToken(self,targeteerMiniature):
+        tokenPos=self.getNextTokenPos()
+        self.tokens.append(self.battleEngine.tokenFactory.newTargetLockedToken(self, tokenPos[0],tokenPos[1],targeteerMiniature.miniatureId))
     
-    def hasStressToken(self):
+    def _hasToken(self,tokenName):
         for token in self.tokens:
-            if token.getTokenType()=='Stress':
-                return token
+            if token!=None:
+                if token.getTokenType()==tokenName:
+                    return token
         return None
     
+    def hasStressToken(self):
+        return self._hasToken("Stress")
+    
+    def hasFocusToken(self):
+        return self._hasToken("Focus")
+    
+    def hasTargetLockerToken(self):
+        return self._hasToken("Target_Locker")
+    
+    def hasTargetLockedToken(self):
+        return self._hasToken("Target_Locked")
+        
+    def hasEvadeToken(self):
+        return self._hasToken("Evade")
+    
+    def _remToken(self,tokenType):
+        token=self._hasToken(tokenType)
+        if token!=None:
+            self._remTokenById(token.tokenId)
+            self.tokens.pop(self.tokens.index(token))
+        
+    def checkAvailableActions(self):
+        self.actionsToPerform-=1
+        if self.actionsToPerform==0:
+            #deactivates actions until next turn
+            pass
+            
+        
     
     def remStressToken(self):
-        token=self.hasStressToken()
-        if token!=None:
-            self.removeToken(token.tokenId)
-            self.tokens.pop(self.tokens.index(token))
+        self._remToken("Stress")
         if self.hasStressToken()==None:
             #activates the cost 2 moves
             for move,moveAction in zip(self.pilot.moves,self.moveActions):
                 cost=self.getMoveCost(move)
                 if cost==2:
                     moveAction.setEnabled(True)
+       
+    def remEvadeToken(self):
+        self._remToken("Evade")
+       
+    def remFocusToken(self):
+        self._remToken("Focus")
+       
+    def remTargetLockToken(self,targetMiniId):
+        self._remTargetLockerToken(targetMiniId)
+        self.battleEngine.getMiniatureById(targetMiniId)._remTargetLockedToken(self.miniatureId)
+        
+        
+    
+    def _remTargetLockerToken(self,miniId):
+        #Target Locks have target Miniatures so I can't remove any TL token. It must be that one.
+        TLToken=None
+        for token in self.tokens:
+            if token.getTokenType()=="Target_Locker" and token.TargetMiniatureId==miniId:
+                TLToken=token
+        if TLToken!=None:
+            self.remTokenById(token.tokenId)
+            self.tokens.pop(self.tokens.index(token))
+    def _remTargetLockedToken(self,miniId):
+        #Target Locks have target Miniatures so I can't remove any TL token. It must be that one.
+        TLToken=None
+        for token in self.tokens:
+            if token.getTokenType()=="Target_Locked" and token.TargetMiniatureId==miniId:
+                TLToken=token
+        if TLToken!=None:
+            self.remTokenById(token.tokenId)
+            self.tokens.pop(self.tokens.index(token))
             
-    def removeToken(self,tokenId):
+    def _remTokenById(self,tokenId):
         for item in self.childItems():
             if type(item) is Token:
                 if item.tokenId==tokenId:
                     self.battleEngine.scene.removeItem(item)
                     return        
+    
+    def performBarrelRoll(self):
+        print "Not Implemented"
+    
+    def endOfTurn(self):
+        self.actionsToPerform=1
+        while self.hasFocusToken()!=None:
+            self.remFocusToken()
+        while self.hasEvadeToken()!=None:
+            self.remEvadeToken()
+            

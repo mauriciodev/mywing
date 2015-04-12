@@ -1,10 +1,10 @@
-{"id": 0, "shield": 2, "skillLevel": 8, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-45, 45], "shipId": 0, "name": "General Leonardo", "cost": 28}
-{"id": 1, "shield": 2, "skillLevel": 5, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-45, 45], "shipId": 0, "name": "Master Mauricio", "cost": 25}
-{"id": 3, "shield": 2, "skillLevel": 4, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-45, 45], "shipId": 0, "name": "My Pilot 2", "cost": 23}
-{"id": 4, "shield": 2, "skillLevel": 2, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-45, 45], "shipId": 0, "name": "My Pilot 1", "cost": 21}
-{"id": 5, "shield": 0, "skillLevel": 7, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Emperor Luiz Claudius", "cost": 17}
-{"id": 6, "shield": 0, "skillLevel": 6, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Darth Philipe", "cost": 16}
-{"id": 7, "shield": 0, "skillLevel": 5, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Darth Figuei", "cost": 15}
-{"id": 8, "shield": 0, "skillLevel": 4, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Dark Pilot 3", "cost": 14}
-{"id": 9, "shield": 0, "skillLevel": 3, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Dark Pilot 2", "cost": 13}
-{"id": 10, "shield": 0, "skillLevel": 1, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Dark Pilot 1", "cost": 12}
+{"id": 0, "shield": 2, "skillLevel": 8, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-45, 45], "shipId": 0, "name": "General Leonardo", "cost": 28, "actions": ["Focus","Target Lock"]}
+{"id": 1, "shield": 2, "skillLevel": 5, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-45, 45], "shipId": 0, "name": "Master Mauricio", "cost": 25, "actions": ["Focus","Target Lock"]}
+{"id": 3, "shield": 2, "skillLevel": 4, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-45, 45], "shipId": 0, "name": "My Pilot 2", "cost": 23, "actions": ["Focus","Target Lock"]}
+{"id": 4, "shield": 2, "skillLevel": 2, "attack": 3, "defense": 2, "health": 3, "attackAngle": [-45, 45], "shipId": 0, "name": "My Pilot 1", "cost": 21, "actions": ["Focus","Target Lock"]}
+{"id": 5, "shield": 0, "skillLevel": 7, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Emperor Luiz Claudius", "cost": 17, "actions": ["Focus","Evade", "Barrel Roll"]}
+{"id": 6, "shield": 0, "skillLevel": 6, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Darth Philipe", "cost": 16, "actions": ["Focus","Evade", "Barrel Roll"]}
+{"id": 7, "shield": 0, "skillLevel": 5, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Darth Figuei", "cost": 15, "actions": ["Focus","Evade", "Barrel Roll"]}
+{"id": 8, "shield": 0, "skillLevel": 4, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Dark Pilot 3", "cost": 14, "actions": ["Focus","Evade", "Barrel Roll"]}
+{"id": 9, "shield": 0, "skillLevel": 3, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Dark Pilot 2", "cost": 13, "actions": ["Focus","Evade", "Barrel Roll"]}
+{"id": 10, "shield": 0, "skillLevel": 1, "attack": 2, "defense": 3, "health": 3, "attackAngle": [-45, 45], "shipId": 1, "name": "Dark Pilot 1", "cost": 12, "actions": ["Focus","Evade", "Barrel Roll"]}

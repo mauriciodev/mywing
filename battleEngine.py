@@ -48,10 +48,10 @@ class BattleEngine(QObject):
         self.currentStage=0
         self.currentTurn=0
         self.playerSequence=[]
-        self.bounds=bounds
+        self.bounds=map(lambda x: x*self.scale,bounds)
         self.pilotFactory=PilotFactory(self,self.scale)
         self.scene=QtGui.QGraphicsScene()
-        self.tokenFactory=TokenFactory(self.scene)
+        self.tokenFactory=TokenFactory(self.scene,self.scale)
     
     def addPlayer(self,name):
         playerId=len(self.players.keys())+1
@@ -154,7 +154,6 @@ class BattleEngine(QObject):
     def addBorders(self,scenarioName):
         #rect=QtCore.QRect(-1*x/2,-1*y/2,x/2,y/2)
         b=self.bounds
-        b=map(lambda x:x*self.scale,b)
         self.borders=self.scene.addRect(b[0],b[1],b[2]-b[0],b[3]-b[1])
         dirname, filename = os.path.split(os.path.abspath(__file__))
         imageFileName=os.path.join(basedir,scenarioName+".jpg")
@@ -173,6 +172,8 @@ class BattleEngine(QObject):
         p=self.pilotFactory.getPilotByName(name)
         if p==None:
             return p
+        x*=self.scale
+        y*=self.scale
         #pilotPos=position(x,y)
         #pilotPos.rotate(trigAngle)
         miniId=len(self.miniatures)
@@ -203,6 +204,10 @@ class BattleEngine(QObject):
             message+=str(msg)+' '
         self.messagePrinted.emit(message)
         print message
+    
+    def endTurn(self):
+        for mini in self.miniatures:
+            mini.endOfTurn()
     
     
 if __name__=="__main__":
