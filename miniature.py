@@ -8,7 +8,7 @@ from copy import deepcopy
 from Qt.tokenFactory import Token
 
 import sys
-from docutils.nodes import target
+
 
 
 if getattr(sys, 'frozen', False):
