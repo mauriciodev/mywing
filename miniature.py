@@ -221,12 +221,9 @@ class miniature(QtGui.QGraphicsRectItem):
             self.moveActions.append(moveAction)
         self.actionPerformMove=self.menu.addAction("Perform move")
         
-        attackMenu=QtGui.QMenu(self.menu)
-        attackMenu.setTitle("&Attack")
-        self.menu.addMenu(attackMenu)
-        self.mainWeaponMenu=QtGui.QMenu(attackMenu)
-        self.mainWeaponMenu.setTitle("&Main weapon")
-        attackMenu.addMenu(self.mainWeaponMenu)
+        self.mainWeaponMenu=QtGui.QMenu(self.menu)
+        self.mainWeaponMenu.setTitle("&Attack: Main weapon")
+        self.menu.addMenu(self.mainWeaponMenu)
         #self.actionsActions=[]
         actionMenu=QtGui.QMenu(self.menu)
         
