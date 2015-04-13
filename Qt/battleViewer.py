@@ -18,6 +18,7 @@ from PyQt4 import QtGui,  QtSvg, QtCore, uic
 from Qt.attackAreaItem import attackAreaItem 
 from Qt.pilotCard import pilotCard
 import Qt.scenarioView
+from Qt.attack import Attack
 
 formClass, baseClass = uic.loadUiType(os.path.join(basedir, "battleViewerDialog.ui"))
 
@@ -29,6 +30,7 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         #Ui_battleViewerDialog.__init__(self, parent)
         self.setupUi(self)
         self.pilotCardWindow=pilotCard(self)
+        self.attackWindow=Attack(self)
         self.scale=scale
         self.range=range*scale
         #self.connect(self.ui.actionExport, QtCore.SIGNAL('triggered()'), QtCore.SLOT('saveToSvg()'))
@@ -36,6 +38,7 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         self.newGame()
         self.addBasicSet()
         self.battleEngine.pilotClicked.connect(self.showPilotCard)
+        self.battleEngine.miniatureAttacked.connect(self.showAttack)
         #self.graphicsView.scale(5,5)
         #scale of centimeters to pixels
         
@@ -53,6 +56,7 @@ class BattleViewer(QtGui.QMainWindow, formClass):
     def showPilotCard(self,pilotId):
         p=self.battleEngine.pilotFactory.getPilotById(pilotId)
         self.pilotCardWindow.showPilotData(p)
+        
         
     def newGame(self,players=["My Player 1","My Player 2"]):
         self.battleEngine=BattleEngine(self.scale,self.range)
@@ -144,6 +148,17 @@ class BattleViewer(QtGui.QMainWindow, formClass):
     
     def preparationStage(self):
         pass
+    def showAttack(self,mini1Id, mini2Id):
+        m1=self.battleEngine.getMiniatureById(mini1Id)
+        m2=self.battleEngine.getMiniatureById(mini2Id)
+        attackResult=self.attackWindow.showAttack(m1,m2)
+        if attackResult:
+            if (self.attackWindow.attackResults and self.attackWindow.defenseResults):
+                self.battleEngine.computeDamage(self.attackWindow.attackResults, self.attackWindow.defenseResults, m1, m2)
+                self.battleEngine.printMessage(m2.pilot.name, "now has",m2.pilot.shield,"shield and",m2.pilot.health, "health")
+                self.printMessage('') 
+                self.battleEngine.checkPilot(m2)
+            
 
 
 if __name__ == "__main__":

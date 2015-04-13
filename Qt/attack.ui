@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEdit_5"/>
+      <widget class="QLineEdit" name="attackShipLineEdit"/>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_11">
@@ -27,7 +27,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="attackUnitLineEdit"/>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_15">
@@ -41,7 +41,7 @@
    <item row="0" column="1">
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEdit_6"/>
+      <widget class="QLineEdit" name="defenseShipLineEdit"/>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_12">
@@ -51,7 +51,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit_2"/>
+      <widget class="QLineEdit" name="defenseUnitLineEdit"/>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_16">
@@ -78,14 +78,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBox">
+         <widget class="QSpinBox" name="attackSpinBox">
           <property name="enabled">
            <bool>false</bool>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="rollAttackPushButton">
           <property name="text">
            <string>Roll!</string>
           </property>
@@ -112,14 +112,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBox_6">
+         <widget class="QSpinBox" name="evadeSpinBox">
           <property name="enabled">
            <bool>false</bool>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="rollDefensePushButton">
           <property name="text">
            <string>Roll!</string>
           </property>
@@ -144,7 +144,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="spinBox_2"/>
+       <widget class="QSpinBox" name="hitSpinBox"/>
       </item>
       <item row="0" column="2">
        <widget class="QPushButton" name="pushButton_5">
@@ -161,7 +161,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="spinBox_3"/>
+       <widget class="QSpinBox" name="criticalSpinBox"/>
       </item>
       <item row="1" column="2">
        <widget class="QPushButton" name="pushButton_6">
@@ -178,7 +178,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="spinBox_4"/>
+       <widget class="QSpinBox" name="focusAttackSpinBox"/>
       </item>
       <item row="2" column="2">
        <widget class="QPushButton" name="pushButton_7">
@@ -195,7 +195,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QSpinBox" name="spinBox_5"/>
+       <widget class="QSpinBox" name="blankAttackSpinBox"/>
       </item>
       <item row="3" column="2">
        <widget class="QPushButton" name="pushButton_8">
@@ -213,15 +213,18 @@
       <string>Defense results</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="focusDefenseSpinBox"/>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Hit:</string>
+         <string>Evade:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="spinBox_7"/>
+       <widget class="QSpinBox" name="evadeDefenseSpinBox"/>
       </item>
       <item row="0" column="2">
        <widget class="QPushButton" name="pushButton_9">
@@ -231,50 +234,30 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Critical hit:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="spinBox_8"/>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="pushButton_10">
-        <property name="text">
-         <string>Reroll</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
        <widget class="QLabel" name="label_9">
         <property name="text">
          <string>Focus:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QSpinBox" name="spinBox_9"/>
-      </item>
-      <item row="2" column="2">
+      <item row="1" column="2">
        <widget class="QPushButton" name="pushButton_11">
         <property name="text">
          <string>Reroll</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>Blank:</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QSpinBox" name="spinBox_10"/>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="blankDefenseSpinBox"/>
       </item>
-      <item row="3" column="2">
+      <item row="2" column="2">
        <widget class="QPushButton" name="pushButton_12">
         <property name="text">
          <string>Reroll</string>
@@ -294,7 +277,7 @@
        <widget class="QListWidget" name="listWidget"/>
       </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="useModifierPushButton">
         <property name="text">
          <string>Use modifier</string>
         </property>
@@ -368,5 +351,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>rollAttackPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>rollAttackDices()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>201</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rollDefensePushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>rollDefenseDices()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>rollAttackDices()</slot>
+  <slot>rollDefenseDices()</slot>
+  <slot>useAttackModifier()</slot>
+  <slot>useDefenseModifier()</slot>
+ </slots>
 </ui>

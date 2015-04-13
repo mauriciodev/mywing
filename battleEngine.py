@@ -30,6 +30,7 @@ class defaultPrinter(QtCore.QObject):
 
 class BattleEngine(QObject):
     pilotClicked=QtCore.pyqtSignal('int')
+    miniatureAttacked=QtCore.pyqtSignal('int','int')
     messagePrinted=pyqtSignal('QString')
     pilotDestroyed=pyqtSignal('int')
     def __init__(self,scale=2.5,shotRange=40*2.5,bounds=[-450,-450,450,450]):
@@ -88,35 +89,36 @@ class BattleEngine(QObject):
         self.scene.removeItem(mini)
         self.pilotDestroyed.emit(mini.miniatureId)
     
-        
-    def basicAttack(self,m1,m2):
-        #this is a very basic attack sequence just to test how it should work
-        #later on this should be replaced by a well timed sequence
-        #i'm ignoring focus right now
-        #self.printMessage('')
+    def getAttackResults(self,m1,m2):
         attackRange=m1.range(m2)
         bearing=m1.bearing(m2)
         self.printMessage(m1.pilot.name, "attacked from range %i" % attackRange, "and bearing %i."% bearing)
         attackDices=m1.pilot.attack
-        defenseDices=m2.pilot.defense
         if (attackRange > 0) and (attackRange <=1):
             attackDices+=1
-        if (attackRange > 2) and (attackRange <=3):
-            defenseDices+=1
         if attackRange > 3:
             self.printMessage("Out of range. Distance:",attackRange)
-            return
+            return None
         if (bearing<m1.pilot.attackAngle[0]) or (bearing>m1.pilot.attackAngle[1]):
             self.printMessage("Enemy out of attack angle.")
-            return 
+            return None
         attackResults=self.rollAttackDices(attackDices)
         self.printMessage("Attack dices ("+str(attackDices)+"):")
         self.printMessage('  ',attackResults)
+        return attackResults
+    
+    def getDefenseResults(self,m1,m2):
         self.printMessage(m2.pilot.name, "tries to avoid the attacks.")
+        defenseDices=m2.pilot.defense
+        attackRange=m1.range(m2)
+        if (attackRange > 2) and (attackRange <=3):
+            defenseDices+=1
         defenseResults=self.rollDefenseDices(defenseDices)
         self.printMessage("Defense dices("+str(defenseDices)+"):")
         self.printMessage('  ',defenseResults)
-        #first, lower attack using evade
+        return defenseResults
+
+    def computeDamage(self,attackResults, defenseResults,m1,m2):
         attackResults['attack']-=defenseResults['evade']
         #if attack is negative, it lowers criticals too
         if (attackResults['attack']<0): 
@@ -127,9 +129,20 @@ class BattleEngine(QObject):
         self.printMessage(m2.pilot.name, "took",attackResults['attack'],"regular hits and", attackResults['critical'], "critical hits.")
         if damage>0: 
             m2.takeDamage(damage)
-        self.printMessage(m2.pilot.name, "now has",m2.pilot.shield,"shield and",m2.pilot.health, "health")
-        self.printMessage('') 
-        self.checkPilot(m2)
+    
+    def basicAttack(self,m1,m2):
+        #this is a very basic attack sequence just to test how it should work
+        #later on this should be replaced by a well timed sequence
+        #i'm ignoring focus right now
+        #self.printMessage('')
+        attackResults=self.getAttackResults(m1, m2)
+        if attackResults!=None: #not out of range or bearing
+            defenseResults=self.getDefenseResults(m1, m2)
+            #first, lower attack using evade
+            self.computeDamage(attackResults, defenseResults, m1, m2)
+            self.printMessage(m2.pilot.name, "now has",m2.pilot.shield,"shield and",m2.pilot.health, "health")
+            self.printMessage('') 
+            self.checkPilot(m2)
     
     def getPlayerName(self,playerId):
         return self.players[playerId]

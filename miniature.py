@@ -82,15 +82,16 @@ class miniature(QtGui.QGraphicsRectItem):
         return QtCore.QPointF(self.boundingRect().width()/2, self.boundingRect().height()/2)
     
     def addPilotData(self):
-        textYpos=self.height/2
-        textXstep=12
-        textXpos=-2
+        textYpos=self.height-10*self.scale
+        textXstep=10*self.scale
+        textXpos=3*self.scale
         self.pilotData=[]
         #attack
         attributes=[self.pilot.attack,self.pilot.defense,self.pilot.shield,self.pilot.health]
         colors=[QtGui.QColor(255,0,0),QtGui.QColor(0,255,0),QtGui.QColor(100,100,255), QtGui.QColor(255,255,0)]
         font=QtGui.QFont()
         font.setBold(True)
+        font.setPointSize(22)
         for color,at in zip(colors,attributes):
             self.pilotData.append(QtGui.QGraphicsTextItem(str(at), parent=self))
             self.pilotData[-1].setFont(font)
@@ -178,8 +179,9 @@ class miniature(QtGui.QGraphicsRectItem):
                     self.move(self.nextMove)
             if action in self.mainWeaponAttackActions:
                 miniId=int(str(action.text()).split(":")[0])
-                targetMiniature=self.battleEngine.getMiniatureById(miniId)
-                self.battleEngine.basicAttack(self,targetMiniature)
+                #targetMiniature=self.battleEngine.getMiniatureById(miniId)
+                #self.battleEngine.basicAttack(self,targetMiniature)
+                self.battleEngine.miniatureAttacked.emit(self.miniatureId, miniId)
                 #qDebug("User clicked attack")
                
             if action in self.targetLockActions:
@@ -187,7 +189,7 @@ class miniature(QtGui.QGraphicsRectItem):
                 targetMiniature=self.battleEngine.getMiniatureById(miniId)
                 self.addTargetLockerToken(targetMiniature)
             if action == self.actionPilotCard:
-                self.battleEngine.pilotClicked.emit(self.pilot.id)
+                self.showPilotCard()
 
     
     def getMiniatureName(self):
@@ -455,6 +457,9 @@ class miniature(QtGui.QGraphicsRectItem):
     def performBarrelRoll(self):
         print "Not Implemented"
     
+    def showPilotCard(self):
+        self.battleEngine.pilotClicked.emit(self.pilot.id)
+    
     def endOfTurn(self):
         self.actionsToPerform=1
         while self.hasFocusToken()!=None:
@@ -462,3 +467,6 @@ class miniature(QtGui.QGraphicsRectItem):
         while self.hasEvadeToken()!=None:
             self.remEvadeToken()
             
+    def mouseDoubleClickEvent(self, *args, **kwargs):
+        self.showPilotCard()
+        return QtGui.QGraphicsRectItem.mouseDoubleClickEvent(self, *args, **kwargs)
