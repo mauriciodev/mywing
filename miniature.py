@@ -287,9 +287,17 @@ class miniature(QtGui.QGraphicsRectItem):
         return math.degrees(bearing*sign)
     
     def range(self,mini):
+        #TO DO: Modify this with ship's geometry
         d=self.distance(mini)
+        #Computing the circle (NOT THE SQUARE) radius. This should be changed later.
+        #r=math.sqrt((self.height/2)**2+(self.width/2)**2)
+        r=(self.height+self.width)/4
+        #reducing the distance because the borders should be he real value
+        d-=2*r 
         range=math.ceil(d/self.rangeDistance)
         return range
+    
+
     
     def isInRange(self,mini):
         range=self.range(mini)
@@ -317,15 +325,12 @@ class miniature(QtGui.QGraphicsRectItem):
         x=y=0
         nextTokenId=0
         #looking for empty spaces
-        for i in range(0,len(self.tokens)):
-            if self.tokens[i]==None:
-                break #found an empty space
-        if i<9:
+        i=self._findIndexOfFirstEmptyTokenSlot()
+        #found an empty space
+        if i>=0:
             nextTokenId=i
         else: 
-            print "More than 9 tokens were added."
             return
-            
         if nextTokenId<3:
             x=-15*self.battleEngine.scale
             y=nextTokenId*15*self.battleEngine.scale
@@ -338,38 +343,55 @@ class miniature(QtGui.QGraphicsRectItem):
         return (x,y)
     
     
-    
-    def _addToken(self,tokenType):
+    def _addTokenByType(self, tokenType):
         tokenPos=self.getNextTokenPos()
+        token=self.battleEngine.tokenFactory.newToken(self, tokenType,tokenPos[0],tokenPos[1])
+        self._addToken(token)
+    
+    def _findIndexOfFirstEmptyTokenSlot(self):
         for i in range(0,len(self.tokens)):
             if self.tokens[i]==None:
-                break
+                return i 
+        return -1
+    
+    def _findTokenIndexByType(self, tokenType):
+        #you can use this to find the first empty slot too
+        for i in range(0,len(self.tokens)):
+            if self.tokens[i]!=None:
+                if self.tokens[i].getTokenType()==tokenType:
+                    return i
+        return -1
+    
+    def _addToken(self,token):
+        i=self._findIndexOfFirstEmptyTokenSlot()
         if i>len(self.tokens):
             print "More than 9 tokens were added."
         else: 
-            self.tokens[i]=self.battleEngine.tokenFactory.newToken(self, tokenType,tokenPos[0],tokenPos[1])
+            self.tokens[i]=token
 
     
     def addStressToken(self):
-        self._addToken("Stress")
+        self._addTokenByType("Stress")
         for move,moveAction in zip(self.pilot.moves,self.moveActions):
             cost=self.getMoveCost(move)
             if cost==2:
                 moveAction.setEnabled(False)
     def addFocusToken(self):
-        self._addToken("Focus")
+        self._addTokenByType("Focus")
         
     def addEvadeToken(self):
-        self._addToken("Evade")
+        self._addTokenByType("Evade")
         
     def addTargetLockerToken(self,targetMiniature):
         tokenPos=self.getNextTokenPos()
-        self.tokens.append(self.battleEngine.tokenFactory.newTargetLockerToken(self, tokenPos[0],tokenPos[1],targetMiniature.miniatureId))
+        token=self.battleEngine.tokenFactory.newTargetLockerToken(self, tokenPos[0],tokenPos[1],targetMiniature.miniatureId)
+        self._addToken(token)
         targetMiniature.addTargetLockedToken(self)
         
     def addTargetLockedToken(self,targeteerMiniature):
         tokenPos=self.getNextTokenPos()
-        self.tokens.append(self.battleEngine.tokenFactory.newTargetLockedToken(self, tokenPos[0],tokenPos[1],targeteerMiniature.miniatureId))
+        token=self.battleEngine.tokenFactory.newTargetLockedToken(self, tokenPos[0],tokenPos[1],targeteerMiniature.miniatureId)
+        self._addToken(token)
     
     def _hasToken(self,tokenName):
         for token in self.tokens:
@@ -384,20 +406,20 @@ class miniature(QtGui.QGraphicsRectItem):
     def hasFocusToken(self):
         return self._hasToken("Focus")
     
-    def hasTargetLockerToken(self):
-        return self._hasToken("Target_Locker")
+    #def hasTargetLockerToken(self):
+    #    return self._hasToken("Target_Locker")
     
-    def hasTargetLockedToken(self):
-        return self._hasToken("Target_Locked")
+    #def hasTargetLockedToken(self):
+    #    return self._hasToken("Target_Locked")
         
     def hasEvadeToken(self):
         return self._hasToken("Evade")
     
     def _remToken(self,tokenType):
-        token=self._hasToken(tokenType)
-        if token!=None:
-            self._remTokenById(token.tokenId)
-            self.tokens.pop(self.tokens.index(token))
+        tokenIndex=self._findTokenIndexByType(tokenType)
+        if tokenIndex>=0:
+            self._remTokenById(self.tokens[tokenIndex].tokenId)
+            self.tokens[tokenIndex]=None
         
     def checkAvailableActions(self):
         self.actionsToPerform-=1
@@ -426,26 +448,37 @@ class miniature(QtGui.QGraphicsRectItem):
         self._remTargetLockerToken(targetMiniId)
         self.battleEngine.getMiniatureById(targetMiniId)._remTargetLockedToken(self.miniatureId)
         
-        
+    def hasTargetLockerToken(self, targetMiniId):
+        #Target Locks have target Miniatures so I can't remove any TL token. It must be that one.
+        for token in self.tokens:
+            if token != None:
+                if token.getTokenType()=="Target_Locker":
+                    if token.TargetMiniatureId==targetMiniId:
+                        return token
+        return None
     
     def _remTargetLockerToken(self,miniId):
         #Target Locks have target Miniatures so I can't remove any TL token. It must be that one.
-        TLToken=None
-        for token in self.tokens:
-            if token.getTokenType()=="Target_Locker" and token.TargetMiniatureId==miniId:
-                TLToken=token
+        TLToken=self.hasTargetLockerToken(miniId)
         if TLToken!=None:
-            self.remTokenById(token.tokenId)
-            self.tokens.pop(self.tokens.index(token))
+            self._remTokenById(TLToken.tokenId)
+            self.tokens[self.tokens.index(TLToken)]
+    
+    def hasTargetLockedToken(self,targeteerMiniId=-1):
+        #use -1 to check for any miniature
+        for token in self.tokens:
+            if token != None:
+                if token.getTokenType()=="Target_Locked":
+                    if (token.TargetMiniatureId==targeteerMiniId) or (targeteerMiniId==-1): 
+                        return token
+        return None        
+    
     def _remTargetLockedToken(self,miniId):
         #Target Locks have target Miniatures so I can't remove any TL token. It must be that one.
-        TLToken=None
-        for token in self.tokens:
-            if token.getTokenType()=="Target_Locked" and token.TargetMiniatureId==miniId:
-                TLToken=token
+        TLToken=self.hasTargetLockedToken(miniId)
         if TLToken!=None:
-            self.remTokenById(token.tokenId)
-            self.tokens.pop(self.tokens.index(token))
+            self._remTokenById(TLToken.tokenId)
+            self.tokens[self.tokens.index(TLToken)]=None
             
     def _remTokenById(self,tokenId):
         for item in self.childItems():

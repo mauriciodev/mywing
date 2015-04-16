@@ -89,7 +89,7 @@ class BattleEngine(QObject):
         self.scene.removeItem(mini)
         self.pilotDestroyed.emit(mini.miniatureId)
     
-    def getAttackResults(self,m1,m2):
+    def getModifiedAttackDices(self,m1,m2):
         attackRange=m1.range(m2)
         bearing=m1.bearing(m2)
         self.printMessage(m1.pilot.name, "attacked from range %i" % attackRange, "and bearing %i."% bearing)
@@ -102,20 +102,28 @@ class BattleEngine(QObject):
         if (bearing<m1.pilot.attackAngle[0]) or (bearing>m1.pilot.attackAngle[1]):
             self.printMessage("Enemy out of attack angle.")
             return None
-        attackResults=self.rollAttackDices(attackDices)
         self.printMessage("Attack dices ("+str(attackDices)+"):")
-        self.printMessage('  ',attackResults)
-        return attackResults
+        return attackDices        
     
-    def getDefenseResults(self,m1,m2):
-        self.printMessage(m2.pilot.name, "tries to avoid the attacks.")
+    def getModifiedDefenseDices(self,m1,m2):
         defenseDices=m2.pilot.defense
         attackRange=m1.range(m2)
         if (attackRange > 2) and (attackRange <=3):
             defenseDices+=1
-        defenseResults=self.rollDefenseDices(defenseDices)
         self.printMessage("Defense dices("+str(defenseDices)+"):")
-        self.printMessage('  ',defenseResults)
+        return defenseDices
+
+    def getAttackResults(self,m1,m2):
+        attackDices=self.getModifiedAttackDices(m1,m2)
+        attackResults=self.rollAttackDices(attackDices)
+        self.printMessage(attackResults)
+        return attackResults
+    
+    def getDefenseResults(self,m1,m2):
+        defenseDices=self.getModifiedDefenseDices(m1,m2)
+        self.printMessage(m2.pilot.name, "tries to avoid the attacks.")
+        defenseResults=self.rollDefenseDices(defenseDices)
+        self.printMessage(defenseResults)
         return defenseResults
 
     def computeDamage(self,attackResults, defenseResults,m1,m2):

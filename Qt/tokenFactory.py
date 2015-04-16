@@ -31,11 +31,13 @@ class TokenFactory(QtCore.QObject):
     def newTargetLockerToken(self,parent, x,y,TargetMiniatureId):
         tokenType="Target_Locker"
         TLToken=self.newToken(parent, tokenType, x, y)
-        TLToken.TargetPlayerId=TargetMiniatureId
+        TLToken.TargetMiniatureId=TargetMiniatureId
+        return TLToken
     def newTargetLockedToken(self,parent, x,y,TargeteerMiniatureId):
         tokenType="Target_Locked"
         TLToken=self.newToken(parent, tokenType, x, y)
-        TLToken.TargetPlayerId=TargeteerMiniatureId
+        TLToken.TargetMiniatureId=TargeteerMiniatureId
+        return TLToken
         
 
 class Token(QtSvg.QGraphicsSvgItem):

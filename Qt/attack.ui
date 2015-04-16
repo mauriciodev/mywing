@@ -14,30 +14,6 @@
    <string>Attack sequence</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_9">
-   <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="attackShipLineEdit"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string>Unit:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="attackUnitLineEdit"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_15">
-       <property name="text">
-        <string>Ship:</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item row="0" column="1">
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="2" column="1">
@@ -62,39 +38,29 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Attack dices</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Attack:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="attackSpinBox">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="rollAttackPushButton">
-          <property name="text">
-           <string>Roll!</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="attackShipLineEdit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Unit:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="attackUnitLineEdit"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>Ship:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item row="1" column="1">
     <widget class="QGroupBox" name="groupBox_3">
@@ -144,10 +110,20 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSpinBox" name="hitSpinBox"/>
+       <widget class="QSpinBox" name="hitSpinBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="2">
        <widget class="QPushButton" name="pushButton_5">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="text">
          <string>Reroll</string>
         </property>
@@ -161,10 +137,20 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSpinBox" name="criticalSpinBox"/>
+       <widget class="QSpinBox" name="criticalSpinBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="1" column="2">
        <widget class="QPushButton" name="pushButton_6">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="text">
          <string>Reroll</string>
         </property>
@@ -178,10 +164,20 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="focusAttackSpinBox"/>
+       <widget class="QSpinBox" name="focusAttackSpinBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="2" column="2">
        <widget class="QPushButton" name="pushButton_7">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="text">
          <string>Reroll</string>
         </property>
@@ -195,70 +191,20 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QSpinBox" name="blankAttackSpinBox"/>
+       <widget class="QSpinBox" name="blankAttackSpinBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="3" column="2">
        <widget class="QPushButton" name="pushButton_8">
-        <property name="text">
-         <string>Reroll</string>
+        <property name="enabled">
+         <bool>true</bool>
         </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QGroupBox" name="groupBox_4">
-     <property name="title">
-      <string>Defense results</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_8">
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="focusDefenseSpinBox"/>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Evade:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSpinBox" name="evadeDefenseSpinBox"/>
-      </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="pushButton_9">
-        <property name="text">
-         <string>Reroll</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>Focus:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="pushButton_11">
-        <property name="text">
-         <string>Reroll</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>Blank:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QSpinBox" name="blankDefenseSpinBox"/>
-      </item>
-      <item row="2" column="2">
-       <widget class="QPushButton" name="pushButton_12">
         <property name="text">
          <string>Reroll</string>
         </property>
@@ -274,10 +220,14 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QListWidget" name="listWidget"/>
+       <widget class="QListWidget" name="attackModListWidget">
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectItems</enum>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="useModifierPushButton">
+       <widget class="QPushButton" name="useAttackModPushButton">
         <property name="text">
          <string>Use modifier</string>
         </property>
@@ -293,12 +243,136 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
-       <widget class="QListWidget" name="listWidget_2"/>
+       <widget class="QListWidget" name="defenseModListWidget"/>
       </item>
       <item row="1" column="0">
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="useDefenseModPushButton">
         <property name="text">
          <string>Use modifier</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Attack dices</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Attack:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="attackSpinBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="rollAttackPushButton">
+          <property name="text">
+           <string>Roll!</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string>Defense results</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_8">
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="focusDefenseSpinBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Evade:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="evadeDefenseSpinBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="pushButton_9">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Reroll</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Focus:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="pushButton_11">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Reroll</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Blank:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="blankDefenseSpinBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="pushButton_12">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Reroll</string>
         </property>
        </widget>
       </item>
@@ -383,11 +457,162 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>useAttackModPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>useAttackModifier()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>124</x>
+     <y>439</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>useDefenseModPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>useDefenseModifier()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>371</x>
+     <y>439</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>hitReroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>202</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_6</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>criticalHitReroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>202</x>
+     <y>222</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_7</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>attackFocusReroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>202</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_8</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>attackBlankReroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>202</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_9</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>evadeReroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_11</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>evadeFocusReroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>238</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_12</sender>
+   <signal>clicked()</signal>
+   <receiver>Attacksequence</receiver>
+   <slot>evadeBlankReroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>248</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>rollAttackDices()</slot>
   <slot>rollDefenseDices()</slot>
   <slot>useAttackModifier()</slot>
   <slot>useDefenseModifier()</slot>
+  <slot>hitReroll()</slot>
+  <slot>criticalHitReroll()</slot>
+  <slot>attackFocusReroll()</slot>
+  <slot>attackBlankReroll()</slot>
+  <slot>evadeReroll()</slot>
+  <slot>evadeFocusReroll()</slot>
+  <slot>evadeBlankReroll()</slot>
  </slots>
 </ui>

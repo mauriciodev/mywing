@@ -136,7 +136,7 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         window=addPilot(pilotFactory=self.battleEngine.pilotFactory,players=self.battleEngine.players,parent=self)
         window.show()
     def printMessage(self,message):
-        self.logTextEdit.append(tr(message))
+        self.logTextEdit.append(message)
     
     def endOfTurn(self):
         self.battleEngine.endTurn()
