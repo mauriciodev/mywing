@@ -184,6 +184,7 @@ class Attack(QtGui.QDialog, formClass):
         self.setAttackRerollsEnabled(not hide)
         self.setDefenseRerollsEnabled(not hide)
 
+    #Many slots for rerolling dices
     def hitReroll(self):
         self.rerollAttackDice(self.hitSpinBox, self.pushButton_5)
     def criticalHitReroll(self):
@@ -193,11 +194,9 @@ class Attack(QtGui.QDialog, formClass):
     def attackBlankReroll(self):
         self.rerollAttackDice(self.blankAttackSpinBox, self.pushButton_8)
     def evadeReroll(self):
-        pass
-        #self.rerollAttackDice(self.hitSpinBox, self.pushButton_9)
+        self.rerollAttackDice(self.evadeDefenseSpinBox, self.pushButton_9)
     def evadeFocusReroll(self):
-        pass
-        #self.rerollAttackDice(self.hitSpinBox, self.pushButton_11)
+        self.rerollAttackDice(self.focusDefenseSpinBox, self.pushButton_11)
     def evadeBlankReroll(self):
-        pass
-        #self.rerollAttackDice(self.hitSpinBox, self.pushButton_12)
+        self.rerollAttackDice(self.blankDefenseSpinBox, self.pushButton_12)
+        
