@@ -17,7 +17,7 @@ class PilotFactory:
         self.scale=scale
         self.parent=parent
         self.pilotLibrary = {}
-        self.actionFactory=ActionFactory()
+        self.actionFactory=ActionFactory(self)
 
         self.readPilots()
 

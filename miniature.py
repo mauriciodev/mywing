@@ -1,7 +1,7 @@
 from PyQt4 import QtGui,  QtSvg
 #from PyQt4.QtCore import *
 from PyQt4 import QtCore 
-import math, os
+import math, os, copy
 from pilot import pilot
 from Qt.pilotCard import pilotCard
 from copy import deepcopy
@@ -9,7 +9,7 @@ from Qt.tokenFactory import Token
 
 import sys
 
-
+from actionFactory import ActionFactory
 
 if getattr(sys, 'frozen', False):
     # we are running in a |PyInstaller| bundle
@@ -26,7 +26,7 @@ class miniature(QtGui.QGraphicsRectItem):
         self.battleEngine=battleEngine
         self.rot=0
         #QGraphicsRectItem.__init__(self, 0, 0, 100, 50)
-        self.pilot=deepcopy(pilot)
+        self.pilot=copy.copy(pilot)
         self.height=self.pilot.ship.sizeY*scale
         self.width=self.pilot.ship.sizeX*scale
         self.playerId=playerId
@@ -247,6 +247,16 @@ class miniature(QtGui.QGraphicsRectItem):
             self.menuTargetLock=QtGui.QMenu(actionMenu)
             self.menuTargetLock.setTitle("Target Lock")
             actionMenu.addMenu(self.menuTargetLock)
+        if self.pilot.hasAction("Boost"):
+            boostMenu=QtGui.QMenu(actionMenu)
+            boostMenu.setTitle("Boost")
+            actionMenu.addMenu(boostMenu)
+            b2Action=boostMenu.addAction("Boost 1 left")
+            b2Action.triggered.connect(self.performBoostm1)
+            b1Action=boostMenu.addAction("Boost 1 forward")
+            b1Action.triggered.connect(self.performBoost0)
+            b3Action=boostMenu.addAction("Boost 1 right")
+            b3Action.triggered.connect(self.performBoost1)
         #performAction=menu.addAction("Perform Action");
         #attack=menu.addAction("Attack");
     def makeMainWeaponMenu(self):
@@ -516,3 +526,14 @@ class miniature(QtGui.QGraphicsRectItem):
         self.AttackArcItem.setZValue(1)
         self.AttackArcItem.setStartAngle(int(self.pilot.attackAngle[0]+90)*16)
         self.AttackArcItem.setSpanAngle(int(self.pilot.attackAngle[1]-self.pilot.attackAngle[0])*16)
+        
+    def performBoost0(self):
+        boostAction=self.pilot.hasAction("Boost")
+        boostAction.perform(self, 0)
+    def performBoost1(self):
+        boostAction=self.pilot.hasAction("Boost")
+        boostAction.perform(self, 1)
+    def performBoostm1(self):
+        boostAction=self.pilot.hasAction("Boost")
+        boostAction.perform(self, -1)
+        

@@ -68,7 +68,7 @@ class pilot:
         result=False
         for actionObj in self.availableActions:
             if actionObj.name==actionName:
-                result=True
+                result=actionObj
         return result
         #return actionName in self.availableActionsNames
             
@@ -78,6 +78,13 @@ class pilot:
             if move.name==name:
                 return move
         return None
+    
+    def getMoveById(self,moveId):
+        for move in self.moves:
+            if move.id==moveId:
+                return move
+        return None
+    
     def getMoveCost(self,moveName):
         move=self.getMoveByName(moveName)
         return self.ship.getMoveCost(move.id)

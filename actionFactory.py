@@ -1,13 +1,16 @@
+import move
 
 class ActionFactory():
-    def __init__(self):
-        self.actionsLibrary=[Evade(), Focus(), TargetLock(), BarrelRoll()]
+    def __init__(self, pilotFactory):
+        self.actionsLibrary=[Evade(), Focus(), TargetLock(), BarrelRoll(), Boost(pilotFactory)]
+        self.pilotFactory=pilotFactory
     
     def getActionByName(self,name):
         for item in self.actionsLibrary:
             if item.name==name:
                 return item
         return None
+
     
 
 class AbstractAction():
@@ -37,8 +40,30 @@ class TargetLock(AbstractAction):
 class BarrelRoll(AbstractAction):
     def __init__(self):
         AbstractAction.__init__(self,u"Barrel Roll")
+    def perform(self, mini, size="right", position=0.5):
+        #side = left or right
+        #position is a float that represents the position of the 1 bar
         
-
+        print "Not implemented"
+class Boost(AbstractAction):
+    def __init__(self,pilotFactory):
+        self.pilotFactory=pilotFactory
+        AbstractAction.__init__(self,u"Boost")
+    def perform(self, mini, direction=0):
+        
+        #direction can be -1, 0 or 1 meaning bank left, straight or bank right
+        boostMove=None
+        if direction==0:
+            boostMove=self.pilotFactory.movesLibrary[0]
+        if direction==-1:
+            boostMove=self.pilotFactory.movesLibrary[8]
+        if direction==1:
+            boostMove=self.pilotFactory.movesLibrary[5]
+        if boostMove==None:
+            print "Invalid boost move."
+        else: 
+            boostMove.performMove(mini)
+        
         
 
         
