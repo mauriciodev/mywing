@@ -44,7 +44,7 @@ class miniature(QtGui.QGraphicsRectItem):
             pixmap=QtGui.QPixmap(imageFileName)
             pixmap=pixmap.scaled(self.height,self.width);
             self.shipImage=QtGui.QGraphicsPixmapItem(pixmap,parent=self)#0, 0, width, height)
-            self.shipImage.setZValue(1)
+            self.shipImage.setZValue(2)
         
         #self.separator1=QtGui.QGraphicsLineItem( 6, 17, width-6, 17, self )
         #self.sidebar1=QtGui.QGraphicsLineItem( 6, 0, 6, height, self )
@@ -60,6 +60,7 @@ class miniature(QtGui.QGraphicsRectItem):
         #self.setPosFromBattleEngine(self.pilot.position)
         self.makePopupMenu() #creates a menu for that pilot
         self.addPilotData()
+        self.addAttackArc()
         self.actionEvade=None
         self.actionEvade=None
         self.actionBarrelRoll=None
@@ -98,13 +99,14 @@ class miniature(QtGui.QGraphicsRectItem):
             self.pilotData[-1].setDefaultTextColor(color)
             self.pilotData[-1].setPos(textXpos,textYpos)
             textXpos+=textXstep
-            self.pilotData[-1].setZValue(2)
+            self.pilotData[-1].setZValue(10)
         #skill
         self.pilotData.append(QtGui.QGraphicsTextItem(str(self.pilot.skillLevel), parent=self))
         self.pilotData[-1].setPos(-2,-4)
         font.setPointSize(font.pointSize()+2)
         self.pilotData[-1].setFont(font)
-        self.pilotData[-1].setZValue(2)
+        self.pilotData[-1].setDefaultTextColor(QtGui.QColor(255,100,0))
+        self.pilotData[-1].setZValue(10)
         #self.pilotData.append(QtGui.QGraphicsTextItem(str(self.pilot.skillLevel), parent=self))
         #self.pilotData[-1].setDefaultTextColor(QtGui.QColor(1,1,0))
         #self.pilotData[-1].moveBy(self.width-5*self.scale, self.height-5*self.scale)
@@ -503,3 +505,14 @@ class miniature(QtGui.QGraphicsRectItem):
     def mouseDoubleClickEvent(self, *args, **kwargs):
         self.showPilotCard()
         return QtGui.QGraphicsRectItem.mouseDoubleClickEvent(self, *args, **kwargs)
+    
+    def addAttackArc(self):
+        self.AttackArcItem=QtGui.QGraphicsEllipseItem(0,0,self.width,self.height,parent=self)
+        redBrush=QtGui.QBrush(QtGui.QColor(255,0,0,50))
+        pen=QtGui.QPen()
+        pen.setWidth(2)
+        self.AttackArcItem.setBrush(redBrush)
+        self.AttackArcItem.setPen(pen)
+        self.AttackArcItem.setZValue(1)
+        self.AttackArcItem.setStartAngle(int(self.pilot.attackAngle[0]+90)*16)
+        self.AttackArcItem.setSpanAngle(int(self.pilot.attackAngle[1]-self.pilot.attackAngle[0])*16)
