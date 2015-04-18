@@ -18,3 +18,4 @@
 {"id": 17, "name": "U turn 3", "dx": 120, "dy": 0, "rotation": 180.0}
 {"id": 18, "name": "U turn 4", "dx": 160, "dy": 0, "rotation": 180.0}
 {"id": 19, "name": "U turn 5", "dx": 200, "dy": 0, "rotation": 180.0}
+{"id": 20, "name": "Barrel Roll", "dx":0 , "dy": 40, "rotation": 0.0} 

@@ -240,7 +240,7 @@ class miniature(QtGui.QGraphicsRectItem):
         if self.pilot.hasAction("Evade"):
             evadeAction=actionMenu.addAction("Evade")
             evadeAction.triggered.connect(self.addEvadeToken)
-        if self.pilot.hasAction("Barrel roll"):
+        if self.pilot.hasAction("Barrel Roll"):
             barrelRollAction=actionMenu.addAction("Barrel roll")
             barrelRollAction.triggered.connect(self.performBarrelRoll)
         if self.pilot.hasAction("Target Lock"):
@@ -500,6 +500,8 @@ class miniature(QtGui.QGraphicsRectItem):
                     return        
     
     def performBarrelRoll(self):
+        brAction=self.pilot.hasAction("Barrel Roll")
+        brAction.perform(self)
         print "Not Implemented"
     
     def showPilotCard(self):

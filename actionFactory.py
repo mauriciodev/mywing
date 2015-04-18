@@ -2,7 +2,7 @@ import move
 
 class ActionFactory():
     def __init__(self, pilotFactory):
-        self.actionsLibrary=[Evade(), Focus(), TargetLock(), BarrelRoll(), Boost(pilotFactory)]
+        self.actionsLibrary=[Evade(), Focus(), TargetLock(), BarrelRoll(pilotFactory), Boost(pilotFactory)]
         self.pilotFactory=pilotFactory
     
     def getActionByName(self,name):
@@ -38,12 +38,15 @@ class TargetLock(AbstractAction):
         targeteerMiniature.addTargetLockerToken(targetedMiniature)
         
 class BarrelRoll(AbstractAction):
-    def __init__(self):
+    def __init__(self,pilotFactory):
+        self.pilotFactory=pilotFactory
         AbstractAction.__init__(self,u"Barrel Roll")
     def perform(self, mini, size="right", position=0.5):
         #side = left or right
         #position is a float that represents the position of the 1 bar
-        
+        brMove=self.pilotFactory.movesLibrary[20]
+        brMove.dx=-mini.height
+        brMove.performMove(mini)
         print "Not implemented"
 class Boost(AbstractAction):
     def __init__(self,pilotFactory):
