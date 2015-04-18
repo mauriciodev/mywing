@@ -102,10 +102,10 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         else:
             print "Folder does not exist"
     def addBasicSet(self):
-        self.addShip("General Leonardo",1,x=-400,y=0,angle=-90)
+        self.addShip("Master Mauricio",1,x=-400,y=0,angle=-90)
         #self.addShip(self.toPixels(-45),self.toPixels(10), -1*math.pi/2, "Master Mauricio",1)
-        self.addShip("Darth Philipe",2,x=400,y=-50,angle=90)
-        self.addShip("Emperor Luiz Claudius",2,x=400,y=50,angle=90)
+        self.addShip("Extra",2,x=400,y=-50,angle=90)
+        self.addShip("Extra",2,x=400,y=50,angle=90)
     
     def toPixels(self,cm):
         return self.scale*cm

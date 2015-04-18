@@ -20,15 +20,15 @@ else:
 
 """This class represents both the Miniature and everything that you can do with a miniature""" 
 class miniature(QtGui.QGraphicsRectItem):
-    def __init__(self, pilot,  playerId, battleEngine=None, height=40,width=40, miniatureId=-1,scale=2.5,rangeDistance=2.5*40):
+    def __init__(self, pilot,  playerId, battleEngine=None, miniatureId=-1,scale=2.5,rangeDistance=2.5*40):
         self.scale=scale
         self.rangeDistance=rangeDistance
         self.battleEngine=battleEngine
         self.rot=0
         #QGraphicsRectItem.__init__(self, 0, 0, 100, 50)
-        self.height=height*scale
-        self.width=width*scale
         self.pilot=deepcopy(pilot)
+        self.height=self.pilot.ship.sizeY*scale
+        self.width=self.pilot.ship.sizeX*scale
         self.playerId=playerId
         self.stressTokens=0
         self.nextMove=None
