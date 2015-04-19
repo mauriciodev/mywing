@@ -23,8 +23,11 @@ class addPilot(QtGui.QDialog, Ui_addPilotDialog):
         self.playersIds=[]
         self.listPlayers()
         
+        
     def addPilotsToList(self):
         self.pilotIds=[]
+        self.pilotListWidget.clear()
+        self.teamPilotListWidget.clear()
         for p in self.pilotFactory.pilotLibrary.values():
             self.addPilotToList(p)
     def addPilotToList(self,pilot):
@@ -32,9 +35,11 @@ class addPilot(QtGui.QDialog, Ui_addPilotDialog):
         self.pilotListWidget.addItem(pilot.name)
     def selectedPilots(self):
         result=[]
-        for item in self.pilotListWidget.selectedItems():
+        for i in range(self.teamPilotListWidget.count()):
+            item=self.teamPilotListWidget.item(i)
             result.append(self.pilotFactory.getPilotByName(item.text()))
         return result
+    
     
     def listPlayers(self):
         self.playerComboBox.clear()
@@ -50,6 +55,25 @@ class addPilot(QtGui.QDialog, Ui_addPilotDialog):
         for pilot in pilots:
             self.parent.addShip(pilot.name,playerId)
         return
+    def newTeam(self):
+        pass
+    def eraseTeam(self):
+        pass
+    def saveTeam(self):
+        pass
+    def viewPilotCard(self):
+        pName=self.pilotListWidget.currentItem().text()
+        p=self.pilotFactory.getPilotByName(pName)
+        self.parent.showPilotCard(p.id)
+    def removeFromTeam(self):
+        pass
+        #self.teamPilotListWidget.
+    def addToTeam(self):
+        for item in self.pilotListWidget.selectedItems():
+            self.teamPilotListWidget.addItem(item.text())
+            
+    
+    
 
 
 if __name__ == "__main__":
