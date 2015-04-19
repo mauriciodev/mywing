@@ -83,9 +83,9 @@ class miniature(QtGui.QGraphicsRectItem):
         return QtCore.QPointF(self.boundingRect().width()/2, self.boundingRect().height()/2)
     
     def addPilotData(self):
-        textYpos=self.height-10*self.scale
-        textXstep=10*self.scale
-        textXpos=3*self.scale
+        textYpos=self.height-15*self.scale
+        textXstep=9*self.scale
+        textXpos=1*self.scale
         self.pilotData=[]
         #attack
         attributes=[self.pilot.attack,self.pilot.defense,self.pilot.shield,self.pilot.health]
