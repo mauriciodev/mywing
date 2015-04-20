@@ -19,6 +19,8 @@ from Qt.attackAreaItem import attackAreaItem
 from Qt.pilotCard import pilotCard
 import Qt.scenarioView
 from Qt.attack import Attack
+from turnSequencer import turnSequencer
+from newGame import NewGame
 
 formClass, baseClass = uic.loadUiType(os.path.join(basedir, "battleViewerDialog.ui"))
 
@@ -30,20 +32,26 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         #Ui_battleViewerDialog.__init__(self, parent)
         self.setupUi(self)
         self.pilotCardWindow=pilotCard(self)
+        self.newGameWindow=NewGame(self)
         self.attackWindow=Attack(self)
         self.scale=scale
         self.range=range*scale
-        #self.connect(self.ui.actionExport, QtCore.SIGNAL('triggered()'), QtCore.SLOT('saveToSvg()'))
-
-        self.newGame()
-        self.addBasicSet()
-        self.battleEngine.pilotClicked.connect(self.showPilotCard)
-        self.battleEngine.miniatureAttacked.connect(self.showAttack)
-        #self.graphicsView.scale(5,5)
-        #scale of centimeters to pixels
         
-        #self.addShip(100,100)-1.*x/2.,-1.*y/2.
-        #self.addShip(300,100)
+        #adding the range ruler menu Action
+        self.actionRangeRuler=QtGui.QAction('Range ruler', self, checkable=True)
+        self.menuBar().addAction(self.actionRangeRuler)
+        self.actionRangeRuler.triggered.connect(self.toggleShowRange)
+        
+        #adding generic DONE menu action
+        self.actionDone=self.menuBar().addAction("END STAGE")
+        f=self.actionDone.font()
+        f.setBold(True)
+        self.actionDone.setFont(f)
+        
+        
+        #Starting a new game
+        self.newGame()
+
         
     def toggleShowRange(self):
         if self.attackArea.isVisible():
@@ -59,6 +67,8 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         
         
     def newGame(self,players=["My Player 1","My Player 2"]):
+        if self.newGameWindow.exec_():
+            players=self.newGameWindow.getPlayers()
         self.battleEngine=BattleEngine(self.scale,self.range)
         for player in players:
             self.battleEngine.addPlayer(player)
@@ -72,6 +82,13 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         self.attackArea=attackAreaItem(self,QtCore.QPointF(0,0), self.range)
         self.attackArea.hide()
         self.battleEngine.scene.addItem(self.attackArea)
+        self.turnSequencer=turnSequencer(battleViewer=self)
+        
+        #connecting everything related to the game engine
+        self.battleEngine.pilotClicked.connect(self.showPilotCard)
+        self.battleEngine.miniatureAttacked.connect(self.showAttack)
+        self.actionDone.triggered.connect(self.turnSequencer.done)
+        self.turnSequencer.beginGame()
         
     def newBasicSetGame(self):
         self.newGame()
@@ -114,7 +131,7 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
         printer.setOutputFileName(filename)
         pdfPainter = QtGui.QPainter(printer)
-        self.scene.render(pdfPainter)
+        self.battleEngine.scene.render(pdfPainter)
         pdfPainter.end()
 
     def exportToSvg(self, fileName):
@@ -123,7 +140,7 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         gen.setFileName(fileName)
         gen.setSize(QSize(200, 200))
         svgPainter = QtGui.QPainter(gen)
-        self.scene.render(svgPainter)
+        self.battleEngine.scene.render(svgPainter)
         svgPainter.end()
 
     def moveShip(self,move,shipItem):
@@ -141,7 +158,7 @@ class BattleViewer(QtGui.QMainWindow, formClass):
     def endOfTurn(self):
         self.battleEngine.endTurn()
     def movementStage(self):
-        pass
+        self.turnSequencer.checkIfEveryPlayerChoseTheirMoves()
     
     def attackStage(self):
         pass
@@ -154,12 +171,16 @@ class BattleViewer(QtGui.QMainWindow, formClass):
         attackResult=self.attackWindow.showAttack(m1,m2)
         if attackResult:
             if (self.attackWindow.attackResults and self.attackWindow.defenseResults):
-                self.battleEngine.computeDamage(self.attackWindow.attackResults, self.attackWindow.defenseResults, m1, m2)
+                damage=self.battleEngine.computeDamage(self.attackWindow.attackResults, self.attackWindow.defenseResults, m1, m2)
                 self.battleEngine.printMessage(m2.pilot.name, "now has",m2.pilot.shield,"shield and",m2.pilot.health, "health")
                 self.printMessage('') 
                 self.battleEngine.checkPilot(m2)
-            
-
+                QtGui.QMessageBox.information(self, "Attack results", m2.pilot.name+" took "+ str(damage)+" damage.")
+    def showMessage(self):
+        message=QtGui.QWidget(parent=self)
+    def setDoneEnabled(self,b=True):
+        self.actionDone.setEnabled(b)
+    
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)

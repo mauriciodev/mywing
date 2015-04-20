@@ -1,4 +1,5 @@
- 
+#!/usr/bin/python
+
 from Qt.battleViewer import BattleViewer
 from PyQt4 import QtGui
 import sys

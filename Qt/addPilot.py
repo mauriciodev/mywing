@@ -45,8 +45,8 @@ class addPilot(QtGui.QDialog, Ui_addPilotDialog):
         self.playerComboBox.clear()
         
         for id,player in self.parent.battleEngine.players.iteritems():
-            self.playerComboBox.addItem(player)
-            self.playersIds.append(id)
+            self.playerComboBox.addItem(player.name)
+            self.playersIds.append(player.playerId)
     
     def accept(self, *args, **kwargs):
         QtGui.QDialog.accept(self, *args, **kwargs)

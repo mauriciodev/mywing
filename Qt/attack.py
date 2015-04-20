@@ -91,11 +91,25 @@ class Attack(QtGui.QDialog, formClass):
         self.criticalSpinBox.setValue(self.criticalSpinBox.value()+attackResults['critical'])
         self.focusAttackSpinBox.setValue(self.focusAttackSpinBox.value()+attackResults['focus'])
         self.blankAttackSpinBox.setValue(self.blankAttackSpinBox.value()+attackResults['nothing'])
+        self.saveUiRollsToResults()
+        
+    def saveUiRollsToResults(self):
+        if self.attackResults!=None:
+            self.attackResults['attack']=self.hitSpinBox.value()
+            self.attackResults['critical']=self.criticalSpinBox.value()
+            self.attackResults['focus']=self.focusAttackSpinBox.value()
+            self.attackResults['nothing']=self.blankAttackSpinBox.value()
+        if self.defenseResults!=None:
+            self.defenseResults['evade']=self.evadeDefenseSpinBox.value()
+            self.defenseResults['focus']=self.focusDefenseSpinBox.value()
+            self.defenseResults['nothing']=self.blankDefenseSpinBox.value()
+
 
     def addDefenseDicesToSpinBoxes(self,defenseResults):
         self.evadeDefenseSpinBox.setValue(self.evadeDefenseSpinBox.value()+self.defenseResults['evade'])
         self.blankDefenseSpinBox.setValue(self.blankDefenseSpinBox.value()+self.defenseResults['nothing'])
         self.focusDefenseSpinBox.setValue(self.focusDefenseSpinBox.value()+self.defenseResults['focus'])
+        self.saveUiRollsToResults()
     
     def rollAttackDices(self):
         self.attackResults=self.parent.battleEngine.getAttackResults(self.attackingMiniature,self.defendingMiniature)
@@ -137,6 +151,7 @@ class Attack(QtGui.QDialog, formClass):
             self.attackModListWidget.takeItem(self.attackModListWidget.currentRow())
         else:
             QtGui.QMessageBox.warning(self, "Invalid attack modifier", "Please select one attack modifier.")
+        self.saveUiRollsToResults()
     
     def useDefenseModifier(self):
         if len(self.defenseModListWidget.selectedItems())>0:
@@ -148,7 +163,7 @@ class Attack(QtGui.QDialog, formClass):
             self.defenseModListWidget.takeItem(self.defenseModListWidget.currentRow())
         else:
             QtGui.QMessageBox.warning(self, "Invalid attack modifier", "Please select one defense modifier.")
-    
+        self.saveUiRollsToResults()
     def listAttackModifiers(self,attackingMiniature, defendingMiniature):
         if attackingMiniature.hasFocusToken():
             self.attackModListWidget.addItem("Focus")

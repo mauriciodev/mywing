@@ -45,7 +45,7 @@
      <x>0</x>
      <y>0</y>
      <width>934</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -60,7 +60,6 @@
      <addaction name="actionNew_basic_set_game"/>
     </widget>
     <addaction name="menuNew_game"/>
-    <addaction name="actionSave"/>
     <addaction name="separator"/>
     <addaction name="actionExport"/>
     <addaction name="separator"/>
@@ -68,34 +67,23 @@
    </widget>
    <widget class="QMenu" name="menuLibraries">
     <property name="title">
-     <string>Libraries</string>
+     <string>Pilots</string>
     </property>
-    <addaction name="actionPilots"/>
-    <addaction name="actionShips"/>
-    <addaction name="actionScenarios"/>
-    <addaction name="separator"/>
     <addaction name="actionAdd_basic_set"/>
     <addaction name="actionAdd_pilot"/>
    </widget>
-   <widget class="QMenu" name="menuShow_range">
+   <widget class="QMenu" name="menuResource_editors">
     <property name="title">
-     <string>Tools</string>
+     <string>Resource editors</string>
     </property>
-    <addaction name="actionRange_ruler"/>
-   </widget>
-   <widget class="QMenu" name="menuEnd_turn">
-    <property name="title">
-     <string>Turns</string>
-    </property>
-    <addaction name="actionPreparation_stage"/>
-    <addaction name="actionMove_stage"/>
-    <addaction name="actionAttack_stage"/>
-    <addaction name="actionEnd_turn"/>
+    <addaction name="actionPilots"/>
+    <addaction name="actionShips"/>
+    <addaction name="actionMoves"/>
+    <addaction name="actionScenarios_2"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuLibraries"/>
-   <addaction name="menuShow_range"/>
-   <addaction name="menuEnd_turn"/>
+   <addaction name="menuResource_editors"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="dockWidget_2">
@@ -135,7 +123,7 @@
   </action>
   <action name="actionExport">
    <property name="text">
-    <string>Export image</string>
+    <string>Export scene as image</string>
    </property>
   </action>
   <action name="actionSave">
@@ -154,16 +142,6 @@
   <action name="actionNew_basic_set_game">
    <property name="text">
     <string>New basic set game</string>
-   </property>
-  </action>
-  <action name="actionPilots">
-   <property name="text">
-    <string>Pilots</string>
-   </property>
-  </action>
-  <action name="actionShips">
-   <property name="text">
-    <string>Ships</string>
    </property>
   </action>
   <action name="actionScenarios">
@@ -191,27 +169,39 @@
   </action>
   <action name="actionAdd_pilot">
    <property name="text">
-    <string>Add pilot</string>
+    <string>Add pilots</string>
    </property>
   </action>
-  <action name="actionEnd_turn">
+  <action name="actionPilots">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>End turn</string>
+    <string>Pilots</string>
    </property>
   </action>
-  <action name="actionPreparation_stage">
+  <action name="actionShips">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>Preparation stage</string>
+    <string>Ships</string>
    </property>
   </action>
-  <action name="actionMove_stage">
+  <action name="actionMoves">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>Move stage</string>
+    <string>Moves</string>
    </property>
   </action>
-  <action name="actionAttack_stage">
+  <action name="actionScenarios_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>Attack stage</string>
+    <string>Scenarios</string>
    </property>
   </action>
  </widget>
@@ -257,42 +247,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionSave</sender>
-   <signal>triggered()</signal>
-   <receiver>battleViewerDialog</receiver>
-   <slot>fileSave()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>360</x>
-     <y>245</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionNew_basic_set_game</sender>
    <signal>triggered()</signal>
    <receiver>battleViewerDialog</receiver>
    <slot>newBasicSetGame()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>466</x>
-     <y>319</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionRange_ruler</sender>
-   <signal>triggered()</signal>
-   <receiver>battleViewerDialog</receiver>
-   <slot>toggleShowRange()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -341,70 +299,6 @@
    <signal>triggered()</signal>
    <receiver>battleViewerDialog</receiver>
    <slot>addPilot()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>466</x>
-     <y>319</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionMove_stage</sender>
-   <signal>triggered()</signal>
-   <receiver>battleViewerDialog</receiver>
-   <slot>movementStage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>466</x>
-     <y>319</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPreparation_stage</sender>
-   <signal>triggered()</signal>
-   <receiver>battleViewerDialog</receiver>
-   <slot>preparationStage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>466</x>
-     <y>319</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionAttack_stage</sender>
-   <signal>triggered()</signal>
-   <receiver>battleViewerDialog</receiver>
-   <slot>attackStage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>466</x>
-     <y>319</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionEnd_turn</sender>
-   <signal>triggered()</signal>
-   <receiver>battleViewerDialog</receiver>
-   <slot>endOfTurn()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

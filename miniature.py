@@ -127,9 +127,10 @@ class miniature(QtGui.QGraphicsRectItem):
     def setTitle(self, label):
         self.title=QtGui.QGraphicsTextItem(str(label), parent=self)
         xPos=-self.title.boundingRect().width()/2+self.width/2
-        self.title.setDefaultTextColor(QtGui.QColor(1,1,0))
+        yPos=-self.title.boundingRect().height()+1*self.scale
+        self.title.setDefaultTextColor(QtGui.QColor(255,255,0))
         #self.items[-1].setTextInteractionFlags(Qt.TextEditorInteraction)
-        self.title.moveBy(xPos, -self.height/2-1)
+        self.title.moveBy(xPos, yPos) #-self.height/2-1
         
     def addAttribute(self, label):
         self.items.append(QtGui.QGraphicsTextItem(label, self))

@@ -7,7 +7,6 @@ from PyQt4.QtCore import QObject, pyqtSignal, QString
 from pilotFactory import PilotFactory
 from miniature import miniature
 from PyQt4 import QtGui,  QtSvg, QtCore
-from turnSequencer import turnSequencer
 from Qt.tokenFactory import TokenFactory
 from Qt.tokenFactory import Token
 
@@ -54,9 +53,10 @@ class BattleEngine(QObject):
         self.scene=QtGui.QGraphicsScene()
         self.tokenFactory=TokenFactory(self.scene,self.scale)
     
-    def addPlayer(self,name):
+    def addPlayer(self,playerObj):
         playerId=len(self.players.keys())+1
-        self.players[playerId]=name
+        self.players[playerId]=playerObj
+        playerObj.playerId=playerId
         return playerId
         
     def removePlayer(self,playerId):
@@ -137,6 +137,7 @@ class BattleEngine(QObject):
         self.printMessage(m2.pilot.name, "took",attackResults['attack'],"regular hits and", attackResults['critical'], "critical hits.")
         if damage>0: 
             m2.takeDamage(damage)
+        return damage
     
     def basicAttack(self,m1,m2):
         #this is a very basic attack sequence just to test how it should work
@@ -153,7 +154,7 @@ class BattleEngine(QObject):
             self.checkPilot(m2)
     
     def getPlayerName(self,playerId):
-        return self.players[playerId]
+        return self.players[playerId].name
     
     def getPlayerList(self):
         res=[]
